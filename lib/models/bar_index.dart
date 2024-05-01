@@ -1,0 +1,1 @@
+enum BarIndex { all, active, completed }
