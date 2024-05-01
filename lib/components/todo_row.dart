@@ -1,7 +1,6 @@
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/task.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TodoRow extends StatefulWidget {
@@ -111,7 +110,7 @@ class _TodoRowState extends State<TodoRow> {
                           : InputBorder.none),
                 ),
               )),
-                if(_isHovered)
+                if(_isHovered || _isEditing)
                   IconButton(
                     onPressed: () {
                       context
