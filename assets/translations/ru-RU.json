@@ -1,0 +1,16 @@
+{
+    "title" : "Мои задачи",
+    "left" : "осталось {}",
+    "about_title" : "Это образовательный проект",
+    "settings" : "Настройки",
+    "settings_theme" : "Тёмная тема",
+    "settings_locale" : "Язык",
+    "new_todo_hint" : "Что нужно сделать?",
+    "bottombar_all" : "Все",
+    "bottombar_active" : "Активные",
+    "bottombar_complete" : "Завершённые",
+    "bottombar_clear" : "Очистить завершённые",
+    "drawer_home" : "Главная",
+    "drawer_settings" : "Настройки",
+    "drawer_about" : "Справка"
+}
