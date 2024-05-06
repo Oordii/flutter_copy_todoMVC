@@ -1,4 +1,4 @@
-import 'package:copy_todo_mvc/components/todo_row.dart';
+import 'package:copy_todo_mvc/widgets/todo_row.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,7 +33,7 @@ class TodoItems extends StatelessWidget {
       builder: (context, state) {
         if (state.taskEntries.isNotEmpty) {
           return (Column(
-            children: _getTasksForCurrentBarIndex(state.taskEntries, state.barIndex).map((e) => TodoRow(taskEntry: e)).toList(),
+            children: _getTasksForCurrentBarIndex(state.taskEntries, state.barIndex).map((e) => TodoRow(taskEntry: e)).toList() ,
           ));
         } else {
           return (Container());

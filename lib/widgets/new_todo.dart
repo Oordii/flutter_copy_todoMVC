@@ -1,4 +1,5 @@
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,15 +40,15 @@ class _NewTodoState extends State<NewTodo> {
                 onTapOutside: (PointerDownEvent event) {
                   FocusManager.instance.primaryFocus?.unfocus();
                 },
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: EdgeInsets.fromLTRB(12, 15, 12, 17),
+                    contentPadding: const EdgeInsets.fromLTRB(12, 15, 12, 17),
                     border: InputBorder.none,
-                    focusedBorder: OutlineInputBorder(
+                    focusedBorder: const OutlineInputBorder(
                         borderSide: BorderSide(color: Color(0xffb83f45)),
-                        borderRadius: BorderRadius.all(Radius.zero)),
-                    hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                    hintText: "What needs to be done?"),
+                        borderRadius: BorderRadius.only(topLeft: Radius.zero, bottomLeft: Radius.zero, topRight: Radius.circular(8), bottomRight: Radius.circular(8))),
+                    hintStyle: const TextStyle(fontStyle: FontStyle.italic),
+                    hintText: "new_todo_hint".tr(context: context)),
                 onSubmitted: (value) {
                   context.read<TodoListCubit>().addTask(value);
                   _controller.clear();
