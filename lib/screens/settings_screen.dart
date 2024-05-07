@@ -45,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 const Icon(Icons.dark_mode),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8),
-                                  child: Text("settings_theme".tr(), style: const TextStyle(fontSize: 20),),
+                                  child: Text("settings_theme".tr(), style: Theme.of(context).textTheme.bodyMedium),
                                 ),
                               ],
                             ),
@@ -66,15 +66,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             const Icon(Icons.language),
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
-                              child: Text("settings_locale".tr(), style: const TextStyle(fontSize: 20),),
+                              child: Text("settings_locale".tr(), style: Theme.of(context).textTheme.bodyMedium),
                             ),
                           ],
                         ),
                         DropdownButton<Locale>(
                           value: context.locale,
-                          items: const [
-                            DropdownMenuItem(value: Locale('en', 'US'),child: Text("English"),),
-                            DropdownMenuItem(value: Locale('ru', 'RU'),child: Text("Русский"),)
+                          items: [
+                            DropdownMenuItem(value: const Locale('en', 'US'),child: Text("English", style:  Theme.of(context).textTheme.labelMedium),),
+                            DropdownMenuItem(value: const Locale('ru', 'RU'),child: Text("Русский", style:  Theme.of(context).textTheme.labelMedium),)
                           ],
                           onChanged: (locale){
                             setState(() {

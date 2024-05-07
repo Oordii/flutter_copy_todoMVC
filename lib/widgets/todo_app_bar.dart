@@ -9,13 +9,9 @@ class TodoAppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text(
+      title: Text(
         "todos",
-        style: TextStyle(
-            color: Color(0xffb83f45),
-            fontWeight: FontWeight.w200,
-            fontSize: 45,
-            fontFamily: "Helvetica Neue"),
+        style: Theme.of(context).textTheme.displayLarge,
       ),
       centerTitle: true,
       elevation: 3,

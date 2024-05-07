@@ -18,14 +18,10 @@ class TodoDrawer extends StatelessWidget {
           SizedBox(
             height: 115,
             width: MediaQuery.of(context).size.width,
-            child: const DrawerHeader(
+            child: DrawerHeader(
                 child: Text(
               "todos",
-              style: TextStyle(
-                  color: Color(0xffb83f45),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20,
-                  fontFamily: "Helvetica Neue"),
+              style: Theme.of(context).textTheme.displaySmall
             )),
           ),
           Expanded(
@@ -50,7 +46,8 @@ class TodoDrawer extends StatelessWidget {
             leading: const Icon(Icons.settings),
             title: Text("drawer_settings".tr()),
             onTap: () async {
-              await context.router.popAndPush(const SettingsRoute());
+              Navigator.pop(context);
+              await context.router.push(const SettingsRoute());
             },
             selected: currentRouteName == SettingsRoute.name,
           ),

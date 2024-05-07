@@ -51,7 +51,7 @@ class TodoRowState extends State<TodoRow> {
     return (BlocBuilder<TodoListCubit, TodoListState>(
         builder: (context, state) {
 
-      final isEditing = widget.taskEntry.key == state.editedEntryKey;
+      var isEditing = widget.taskEntry.key == state.editedEntryKey;
 
       if (isEditing) {
         Future.delayed(Duration.zero, () {
@@ -88,16 +88,15 @@ class TodoRowState extends State<TodoRow> {
               },
               autofocus: isEditing,
               enabled: isEditing,
-              style: TextStyle(
-                  color: widget.taskEntry.value.isCompleted
-                      ? Theme.of(context).highlightColor
-                      : Theme.of(context).hintColor,
-                  decoration: widget.taskEntry.value.isCompleted
+              style: Theme.of(context).textTheme.bodySmall,
+                  
+                  /* decoration: widget.taskEntry.value.isCompleted
                       ? TextDecoration.lineThrough
-                      : TextDecoration.none),
+                      : TextDecoration.none), */
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: 'todo_hint'.tr(),
+                hintStyle: Theme.of(context).textTheme.labelSmall
               ),
             )),
             Row(
@@ -105,9 +104,7 @@ class TodoRowState extends State<TodoRow> {
                 if(isEditing) ...{
                   IconButton(
                     visualDensity: VisualDensity.compact,
-                    onPressed: () {
-                      _submitText();
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.done)),
                 } else ...{
                   IconButton(

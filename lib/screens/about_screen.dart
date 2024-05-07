@@ -20,7 +20,7 @@ class AboutScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text("about_title".tr(),
-                  style: const TextStyle(fontSize: 16)),
+                  style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
         ),
