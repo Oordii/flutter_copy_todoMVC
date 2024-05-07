@@ -36,7 +36,7 @@ class TodoListCubit extends Cubit<TodoListState> {
   Future<void> updateTask(MapEntry<dynamic, Task> entry) async {
     _taskService.updateTask(entry);
     emit(TodoListState(
-        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex));
+        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex, editedEntryKey: null));
   }
 
   Future<void> deleteTask(MapEntry<dynamic, Task> entry) async {
