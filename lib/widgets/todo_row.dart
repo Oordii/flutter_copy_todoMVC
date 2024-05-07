@@ -1,5 +1,6 @@
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/task.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,110 +10,129 @@ class TodoRow extends StatefulWidget {
   final MapEntry<dynamic, Task> taskEntry;
 
   @override
-  State<TodoRow> createState() => _TodoRowState();
+  State<TodoRow> createState() => TodoRowState();
 }
 
-class _TodoRowState extends State<TodoRow> {
-  bool _isHovered = false;
-  bool _isEditing = false;
-
-  late FocusNode focusNode = FocusNode();
+class TodoRowState extends State<TodoRow> {
+  late FocusNode focusNode;
   late TextEditingController _textEditingController;
 
   @override
   void initState() {
     super.initState();
+    focusNode = FocusNode();
     _textEditingController = TextEditingController();
-    
+
+    focusNode.addListener(() {
+      Future.delayed(Duration.zero, () {
+        if (!focusNode.hasPrimaryFocus) {
+          _submitText();
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    focusNode.dispose();
     super.dispose();
+  }
+
+  void _submitText() {
+    widget.taskEntry.value.name = _textEditingController.text;
+    context.read<TodoListCubit>().updateTask(widget.taskEntry);
   }
 
   @override
   Widget build(BuildContext context) {
-    focusNode.addListener(() {
-      if(_isEditing){
-        focusNode.requestFocus();
-        _textEditingController.selection = TextSelection.collapsed(offset: _textEditingController.text.length);   
-      }
-    },);
     _textEditingController.text = widget.taskEntry.value.name;
 
     return (BlocBuilder<TodoListCubit, TodoListState>(
         builder: (context, state) {
+
+      final isEditing = widget.taskEntry.key == state.editedEntryKey;
+
+      if (isEditing) {
+        Future.delayed(Duration.zero, () {
+          focusNode.requestFocus();
+        });
+      }
+
       return Card(
         clipBehavior: Clip.hardEdge,
-        child: (Container(
-          decoration: BoxDecoration(border: Border.all(color: Colors.black12)),
-          child: Row(
-            children: [
-              Checkbox(
-                activeColor: Colors.green,
-                value: widget.taskEntry.value.isCompleted,
-                onChanged: (value) {
-                  widget.taskEntry.value.isCompleted = value ?? false;
-                  context.read<TodoListCubit>().updateTask(widget.taskEntry);
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25)),
+        elevation: 2,
+        child: (Row(
+          children: [
+            Checkbox(
+              activeColor: Colors.green,
+              value: widget.taskEntry.value.isCompleted,
+              onChanged: (value) {
+                widget.taskEntry.value.isCompleted = value ?? false;
+                context.read<TodoListCubit>().updateTask(widget.taskEntry);
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25)),
+            ),
+            Expanded(
+                child: TextFormField(
+               keyboardType:  TextInputType.multiline,
+              maxLines: null,
+              focusNode: focusNode,
+              controller: _textEditingController,
+              onTapOutside: (PointerDownEvent event) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              onFieldSubmitted: (value) {
+                _submitText();
+              },
+              autofocus: isEditing,
+              enabled: isEditing,
+              style: TextStyle(
+                  color: widget.taskEntry.value.isCompleted
+                      ? Theme.of(context).highlightColor
+                      : Theme.of(context).hintColor,
+                  decoration: widget.taskEntry.value.isCompleted
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: 'todo_hint'.tr(),
               ),
-              Expanded(
-                  child: TextFormField(
-                    minLines: 1,
-                    maxLines: 3,
-                    focusNode: focusNode,
-                    controller: _textEditingController,
-                    onTapOutside: (PointerDownEvent event) {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      setState(() {
-                        _isEditing = false;
-                        _isHovered = false;
-                      });
+            )),
+            Row(
+              children: [
+                if(isEditing) ...{
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      _submitText();
                     },
-                    onFieldSubmitted: (value) {
-                      widget.taskEntry.value.name = value;
-                      context.read<TodoListCubit>().updateTask(widget.taskEntry);
-                      setState(() {
-                        _isEditing = false;
-                      });
+                    icon: const Icon(Icons.done)),
+                } else ...{
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      context
+                          .read<TodoListCubit>()
+                          .setEditedEntryKey(widget.taskEntry.key);
                     },
-                    enabled: _isEditing,
-                    style: TextStyle(
-                        /* color: widget.taskEntry.value.isCompleted
-                            ? Colors.grey
-                            : Colors.black, */
-                        decoration: widget.taskEntry.value.isCompleted
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none),
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: _isEditing
-                            ? const OutlineInputBorder(
-                                borderRadius: BorderRadius.zero,
-                                borderSide: BorderSide(color: Color(0xffb83f45)))
-                            : InputBorder.none),
-                  )),
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isEditing = true;
-                        });
-                        focusNode.requestFocus();
-                      }, 
-                      icon: const Icon(Icons.edit)),
-                    IconButton(
-                      onPressed: () {context.read<TodoListCubit>().deleteTask(widget.taskEntry);}, 
-                      icon: const Icon(Icons.delete, color: Colors.redAccent,)),
-                  ],
-                )
-            ],
-          ),
+                    icon: const Icon(Icons.edit)),
+                },
+                IconButton(
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      context
+                          .read<TodoListCubit>()
+                          .deleteTask(widget.taskEntry);
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.redAccent,
+                    )),
+              ],
+            )
+          ],
         )),
       );
     }));
