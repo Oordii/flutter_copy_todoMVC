@@ -18,15 +18,19 @@ class TodoListCubit extends Cubit<TodoListState> {
   addTask(String taskName) async {
     Task task;
     var box = Hive.box<Task>('tasks');
+    
+    task = Task(name: taskName, isCompleted: false);
 
-    if (box.isNotEmpty) {
-      task = Task(name: taskName, isCompleted: false);
-    } else {
-      task = Task(name: taskName, isCompleted: false);
-    }
     await box.add(task);
+
     emit(TodoListState(
-        taskEntries: box.toMap(), barIndex: state.barIndex));
+        taskEntries: box.toMap(), barIndex: state.barIndex, editedEntryKey: box.keys.last));
+  }
+
+  setEditedEntryKey(dynamic key){
+    var box = Hive.box<Task>('tasks');
+
+    emit(TodoListState(taskEntries: box.toMap(), barIndex: state.barIndex, editedEntryKey: key));
   }
 
   toggleAllTasks() async {
