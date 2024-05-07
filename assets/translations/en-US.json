@@ -2,7 +2,7 @@
     "title" : "My tasks",
     "left" : "{} left",
     "about_title" : "This is educational project",
-    "settings" : "Setings",
+    "settings" : "Settings",
     "settings_theme" : "Dark Theme",
     "settings_locale" : "Language",
     "new_todo_hint" : "What needs to be done?",
@@ -11,7 +11,7 @@
     "bottombar_complete" : "Completed",
     "bottombar_clear" : "Clear completed",
     "drawer_home" : "Home",
-    "drawer_settings" : "Setings",
+    "drawer_settings" : "Settings",
     "drawer_about" : "About",
     "todo_hint" : "What needs to be done?"
 }
