@@ -11,7 +11,6 @@ class TodoBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return (BlocBuilder<TodoListCubit, TodoListState>(
       builder: (context, state) {
-        if (state.taskEntries.isNotEmpty) {
           return (Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.spaceAround,
@@ -19,48 +18,46 @@ class TodoBar extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    /* width: 48, */
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            side: state.barIndex == BarIndex.all
-                                ? const BorderSide(color: Colors.red)
-                                : BorderSide.none),
-                        onPressed: () {
-                          context
-                              .read<TodoListCubit>()
-                              .setBarItemIndex(BarIndex.all);
-                        },
-                        child: Text("bottombar_all".tr(context: context))),
-                  ),
-                  SizedBox(
-                    /* width: 65, */
-                    child: TextButton(
-                        style: TextButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.zero),
-                            side: state.barIndex == BarIndex.active
-                                ? const BorderSide(color: Colors.red)
-                                : BorderSide.none),
-                        onPressed: () {
-                          context
-                              .read<TodoListCubit>()
-                              .setBarItemIndex(BarIndex.active);
-                        },
-                        child: Text("bottombar_active".tr())),
-                  ),
+                  TextButton(
+
+                      style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          elevation: 3,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          side: state.barIndex == BarIndex.all
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none),
+                      onPressed: state.taskEntries.isEmpty ? null : () {
+                        context
+                            .read<TodoListCubit>()
+                            .setBarItemIndex(BarIndex.all);
+                      },
+                      child: Text("bottombar_all".tr(context: context))),
                   TextButton(
                       style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          side: state.barIndex == BarIndex.active
+                              ? const BorderSide(color: Colors.red)
+                              : BorderSide.none),
+                      onPressed: state.taskEntries.isEmpty ? null : () {
+                        context
+                            .read<TodoListCubit>()
+                            .setBarItemIndex(BarIndex.active);
+                      },
+                      child: Text("bottombar_active".tr())),
+                  TextButton(
+                      style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
                           elevation: 3,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
                           side: state.barIndex == BarIndex.completed
                               ? const BorderSide(color: Colors.red)
                               : BorderSide.none),
-                      onPressed: () {
+                      onPressed: state.taskEntries.isEmpty ? null : () {
                         context
                             .read<TodoListCubit>()
                             .setBarItemIndex(BarIndex.completed);
@@ -70,6 +67,7 @@ class TodoBar extends StatelessWidget {
               ),
               TextButton(
                   style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
                     elevation: 3,
                     shape: const LinearBorder(),
                   ),
@@ -79,9 +77,6 @@ class TodoBar extends StatelessWidget {
                   child: Text("bottombar_clear".tr()))
             ],
           ));
-        } else {
-          return (Container());
-        }
       },
     ));
   }
