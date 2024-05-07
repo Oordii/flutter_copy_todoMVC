@@ -88,7 +88,7 @@ class TodoRowState extends State<TodoRow> {
               },
               enabled: isEditing,
               style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
-                color: widget.taskEntry.value.isCompleted ? Theme.of(context).disabledColor : null,
+                color: widget.taskEntry.value.isCompleted ? Theme.of(context).dividerColor : null,
                 decoration: widget.taskEntry.value.isCompleted
                       ? TextDecoration.lineThrough
                       : TextDecoration.none)
