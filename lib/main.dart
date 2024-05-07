@@ -1,5 +1,6 @@
 import 'package:copy_todo_mvc/cubits/settings_cubit.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
+import 'package:copy_todo_mvc/models/global_theme.dart';
 import 'package:copy_todo_mvc/router/app_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -47,16 +48,8 @@ class MyApp extends StatelessWidget {
             routerConfig: _appRouter.config(),
             title: 'TodoMVC copy',
             themeMode: state.themeMode,
-            theme: ThemeData(
-              useMaterial3: true,
-              brightness: Brightness.light,
-              colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(245, 255, 255, 255))
-            ),
-            darkTheme: ThemeData(
-              useMaterial3: true,
-              brightness: Brightness.dark,
-              colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(1, 8, 5, 24), brightness: Brightness.dark)
-            ),
+            theme: GlobalTheme.light(),
+            darkTheme: GlobalTheme.dark(),
             builder: (context, child) => child!,
           );
         }
