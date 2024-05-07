@@ -86,13 +86,13 @@ class TodoRowState extends State<TodoRow> {
               onFieldSubmitted: (value) {
                 _submitText();
               },
-              autofocus: isEditing,
               enabled: isEditing,
-              style: Theme.of(context).textTheme.bodySmall,
-                  
-                  /* decoration: widget.taskEntry.value.isCompleted
+              style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
+                color: widget.taskEntry.value.isCompleted ? Theme.of(context).disabledColor : null,
+                decoration: widget.taskEntry.value.isCompleted
                       ? TextDecoration.lineThrough
-                      : TextDecoration.none), */
+                      : TextDecoration.none)
+              ),
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: 'todo_hint'.tr(),
@@ -102,10 +102,10 @@ class TodoRowState extends State<TodoRow> {
             Row(
               children: [
                 if(isEditing) ...{
-                  IconButton(
+                  const IconButton(
                     visualDensity: VisualDensity.compact,
-                    onPressed: () {},
-                    icon: const Icon(Icons.done)),
+                    onPressed: null,
+                    icon: Icon(Icons.done)),
                 } else ...{
                   IconButton(
                     visualDensity: VisualDensity.compact,
