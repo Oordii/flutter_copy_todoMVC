@@ -6,7 +6,7 @@ class Layout extends StatelessWidget {
   const Layout({
     super.key,
     required this.child,
-    this.floatingActionButton
+    this.floatingActionButton, 
   });
 
   final Widget child;
@@ -15,7 +15,6 @@ class Layout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        /* backgroundColor: const Color.fromARGB(255, 245, 245, 245), */
         appBar: const TodoAppBar(),
         drawer: const TodoDrawer(),
         drawerEnableOpenDragGesture: true,
