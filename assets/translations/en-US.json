@@ -8,9 +8,10 @@
     "new_todo_hint" : "What needs to be done?",
     "bottombar_all" : "All",
     "bottombar_active" : "Active",
-    "bottombar_complete" : "Complete",
+    "bottombar_complete" : "Completed",
     "bottombar_clear" : "Clear completed",
     "drawer_home" : "Home",
     "drawer_settings" : "Setings",
-    "drawer_about" : "About"
+    "drawer_about" : "About",
+    "todo_hint" : "What needs to be done?"
 }

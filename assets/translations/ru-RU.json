@@ -12,5 +12,6 @@
     "bottombar_clear" : "Очистить завершённые",
     "drawer_home" : "Главная",
     "drawer_settings" : "Настройки",
-    "drawer_about" : "Справка"
+    "drawer_about" : "Справка",
+    "todo_hint" : "Что нужно сделать?"
 }
