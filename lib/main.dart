@@ -15,7 +15,12 @@ Future<void> main() async {
 
   await Hive.initFlutter();
   Hive.registerAdapter(TaskAdapter());
-  await Hive.openBox<Task>('tasks');
+  try {
+    await Hive.openBox<Task>('tasks');
+  } catch (error){
+    await Hive.deleteBoxFromDisk('tasks');
+    Hive.openBox<Task>('tasks');
+  }
   await Hive.openBox('settings');
 
   runApp(EasyLocalization(
