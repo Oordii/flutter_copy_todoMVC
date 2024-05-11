@@ -7,13 +7,20 @@ class TaskService {
 
   final _box = Hive.box<Task>('tasks');
 
-  Map<dynamic, Task> getTaskEntries() {
-    return _box.toMap();
+  List<Task> getAll() {
+    return _box.values.toList();
   }
 
   Future<int> addTask(String taskName) async {
-    final task = Task(name: taskName, isCompleted: false);
-    return await _box.add(task);
+    int id = 0;
+    if (_box.isEmpty){
+      id = 1;
+    } else {
+      id = _box.values.last.id + 1;
+    }
+    final task = Task(id: id, name: taskName, isCompleted: false);
+    await _box.put(task.id, task);
+    return task.id;
   }
 
   void toggleAllTasks() async {
@@ -28,12 +35,12 @@ class TaskService {
     }
   }
 
-  void updateTask(MapEntry<dynamic, Task> entry) async {
-    await _box.put(entry.key, entry.value);
+  void updateTask(Task task) async {
+    await _box.put(task.id, task);
   }
 
-  void deleteTask(MapEntry<dynamic, Task> entry) async {
-    await _box.delete(entry.key);
+  void deleteTask(Task task) async {
+    await _box.delete(task.id);
   }
 
   void clearCompleted() async {
