@@ -2,57 +2,94 @@ import 'package:copy_todo_mvc/models/bar_index.dart';
 import 'package:copy_todo_mvc/models/task.dart';
 import 'package:copy_todo_mvc/services/task_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo_list_state.dart';
+part 'todo_list_cubit.freezed.dart';
 
 class TodoListCubit extends Cubit<TodoListState> {
+  TodoListCubit() : super(const TodoListState.initial());
+
   final _taskService = TaskService();
 
-  TodoListCubit() : super(TodoListState(taskEntries: <dynamic, Task>{})) {
-    _initializeTasks();
-  }
-  
-  void _initializeTasks() {
-    emit(TodoListState(taskEntries: _taskService.getTaskEntries()));
+  void init() {
+    emit(const TodoListState.loading());
+
+    List<Task> tasks = <Task>[];
+    try{
+      tasks = _taskService.getAll();
+    } catch (error){
+      emit(TodoListState.error(error.toString()));
+    }
+
+    emit(TodoListState.success(
+        tasks: tasks,
+        barIndex: BarIndex.all,
+        editedTaskId: null));
   }
 
   addTask(String taskName) async {
     final newEntryKey = await _taskService.addTask(taskName);
-    emit(TodoListState(
-        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex, editedEntryKey: newEntryKey));
+    emit(TodoListState.success(
+        tasks: _taskService.getAll(),
+        barIndex:
+            state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: () {
+          return BarIndex.all;
+        }),
+        editedTaskId: newEntryKey));
   }
 
-  setEditedEntryKey(dynamic key){
-    emit(TodoListState(taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex, editedEntryKey: key));
+  setEditedEntryKey(int key) {
+    emit(TodoListState.success(
+        tasks: _taskService.getAll(),
+        barIndex:
+            state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: () {
+          return BarIndex.all;
+        }),
+        editedTaskId: key));
   }
 
   toggleAllTasks() async {
     _taskService.toggleAllTasks();
-    emit(TodoListState(
-        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex));
+    emit(TodoListState.success(
+        tasks: _taskService.getAll(),
+        barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: (){return BarIndex.all;}),));
   }
 
-  Future<void> updateTask(MapEntry<dynamic, Task> entry) async {
-    _taskService.updateTask(entry);
-    emit(TodoListState(
-        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex, editedEntryKey: null));
+  Future<void> updateTask(Task task) async {
+    _taskService.updateTask(task);
+    emit(TodoListState.success(
+        tasks: _taskService.getAll(),
+        barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: (){return BarIndex.all;}),
+        editedTaskId: null));
   }
 
-  Future<void> deleteTask(MapEntry<dynamic, Task> entry) async {
-    _taskService.deleteTask(entry);
-    emit(TodoListState(
-        taskEntries: _taskService.getTaskEntries(), barIndex: state.barIndex));
+  Future<void> deleteTask(Task task) async {
+    _taskService.deleteTask(task);
+    emit(TodoListState.success(
+        tasks: _taskService.getAll(),
+        barIndex:state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: (){return BarIndex.all;})));
   }
 
   void setBarItemIndex(BarIndex index) {
-    var box = Hive.box<Task>('tasks');
-    emit(TodoListState(
-        taskEntries: box.toMap(), barIndex: index));
+    emit(TodoListState.success(tasks: _taskService.getAll(), 
+    barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: (){return BarIndex.all;}),));
   }
 
   void clearCompletedTasks() async {
     _taskService.clearCompleted();
-    emit(TodoListState(taskEntries: _taskService.getTaskEntries()));
+    emit(TodoListState.success(tasks: _taskService.getAll()));
   }
 }
