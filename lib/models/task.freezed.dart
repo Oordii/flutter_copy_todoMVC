@@ -20,6 +20,8 @@ Task _$TaskFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Task {
+  @HiveField(2)
+  int get id => throw _privateConstructorUsedError;
   @HiveField(0)
   String get name => throw _privateConstructorUsedError;
   @HiveField(1)
@@ -35,7 +37,10 @@ abstract class $TaskCopyWith<$Res> {
   factory $TaskCopyWith(Task value, $Res Function(Task) then) =
       _$TaskCopyWithImpl<$Res, Task>;
   @useResult
-  $Res call({@HiveField(0) String name, @HiveField(1) bool isCompleted});
+  $Res call(
+      {@HiveField(2) int id,
+      @HiveField(0) String name,
+      @HiveField(1) bool isCompleted});
 }
 
 /// @nodoc
@@ -51,10 +56,15 @@ class _$TaskCopyWithImpl<$Res, $Val extends Task>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? isCompleted = null,
   }) {
     return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -74,7 +84,10 @@ abstract class _$$TaskImplCopyWith<$Res> implements $TaskCopyWith<$Res> {
       __$$TaskImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({@HiveField(0) String name, @HiveField(1) bool isCompleted});
+  $Res call(
+      {@HiveField(2) int id,
+      @HiveField(0) String name,
+      @HiveField(1) bool isCompleted});
 }
 
 /// @nodoc
@@ -87,10 +100,15 @@ class __$$TaskImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? id = null,
     Object? name = null,
     Object? isCompleted = null,
   }) {
     return _then(_$TaskImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -108,12 +126,16 @@ class __$$TaskImplCopyWithImpl<$Res>
 @HiveType(typeId: 1, adapterName: 'TaskAdapter')
 class _$TaskImpl implements _Task {
   const _$TaskImpl(
-      {@HiveField(0) required this.name,
+      {@HiveField(2) required this.id,
+      @HiveField(0) required this.name,
       @HiveField(1) this.isCompleted = false});
 
   factory _$TaskImpl.fromJson(Map<String, dynamic> json) =>
       _$$TaskImplFromJson(json);
 
+  @override
+  @HiveField(2)
+  final int id;
   @override
   @HiveField(0)
   final String name;
@@ -124,7 +146,7 @@ class _$TaskImpl implements _Task {
 
   @override
   String toString() {
-    return 'Task(name: $name, isCompleted: $isCompleted)';
+    return 'Task(id: $id, name: $name, isCompleted: $isCompleted)';
   }
 
   @override
@@ -132,6 +154,7 @@ class _$TaskImpl implements _Task {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TaskImpl &&
+            (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.isCompleted, isCompleted) ||
                 other.isCompleted == isCompleted));
@@ -139,7 +162,7 @@ class _$TaskImpl implements _Task {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, name, isCompleted);
+  int get hashCode => Object.hash(runtimeType, id, name, isCompleted);
 
   @JsonKey(ignore: true)
   @override
@@ -157,11 +180,15 @@ class _$TaskImpl implements _Task {
 
 abstract class _Task implements Task {
   const factory _Task(
-      {@HiveField(0) required final String name,
+      {@HiveField(2) required final int id,
+      @HiveField(0) required final String name,
       @HiveField(1) final bool isCompleted}) = _$TaskImpl;
 
   factory _Task.fromJson(Map<String, dynamic> json) = _$TaskImpl.fromJson;
 
+  @override
+  @HiveField(2)
+  int get id;
   @override
   @HiveField(0)
   String get name;

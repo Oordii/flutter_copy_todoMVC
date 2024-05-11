@@ -17,6 +17,7 @@ class TaskAdapter extends TypeAdapter<_$TaskImpl> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return _$TaskImpl(
+      id: fields[2] as int,
       name: fields[0] as String,
       isCompleted: fields[1] as bool,
     );
@@ -25,7 +26,9 @@ class TaskAdapter extends TypeAdapter<_$TaskImpl> {
   @override
   void write(BinaryWriter writer, _$TaskImpl obj) {
     writer
+      ..writeByte(3)
       ..writeByte(2)
+      ..write(obj.id)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -48,12 +51,14 @@ class TaskAdapter extends TypeAdapter<_$TaskImpl> {
 // **************************************************************************
 
 _$TaskImpl _$$TaskImplFromJson(Map<String, dynamic> json) => _$TaskImpl(
+      id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       isCompleted: json['isCompleted'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$TaskImplToJson(_$TaskImpl instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.name,
       'isCompleted': instance.isCompleted,
     };

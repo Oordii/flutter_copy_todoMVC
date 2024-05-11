@@ -9,6 +9,8 @@ part 'task.g.dart';
 class Task with _$Task{
   @HiveType(typeId: 1, adapterName: 'TaskAdapter')
   const factory Task({
+    @HiveField(2)
+    required int id,
     @HiveField(0)
     required String name,
     @HiveField(1)
@@ -16,5 +18,5 @@ class Task with _$Task{
     bool isCompleted,
   }) = _Task;
 
- factory Task.fromJson(Map<String, dynamic> json) => _$Task(json);
+ factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
 }
