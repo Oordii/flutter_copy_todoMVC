@@ -11,6 +11,12 @@ class TodoBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return (BlocBuilder<TodoListCubit, TodoListState>(
       builder: (context, state) {
+        final isTasksEmpty = state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+          return tasks.isEmpty;
+        }, orElse: (){ return true; });
+        final barIndex = state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+          return barIndex;
+        }, orElse: ()=>BarIndex.all);
           return (Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             alignment: WrapAlignment.spaceAround,
@@ -25,10 +31,10 @@ class TodoBar extends StatelessWidget {
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          side: state.barIndex == BarIndex.all
+                          side: barIndex == BarIndex.all
                               ? const BorderSide(color: Colors.red)
                               : BorderSide.none),
-                      onPressed: state.taskEntries.isEmpty ? null : () {
+                      onPressed: isTasksEmpty ? null : () {
                         context
                             .read<TodoListCubit>()
                             .setBarItemIndex(BarIndex.all);
@@ -39,10 +45,10 @@ class TodoBar extends StatelessWidget {
                           visualDensity: VisualDensity.compact,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          side: state.barIndex == BarIndex.active
+                          side: barIndex == BarIndex.active
                               ? const BorderSide(color: Colors.red)
                               : BorderSide.none),
-                      onPressed: state.taskEntries.isEmpty ? null : () {
+                      onPressed: isTasksEmpty ? null : () {
                         context
                             .read<TodoListCubit>()
                             .setBarItemIndex(BarIndex.active);
@@ -54,10 +60,10 @@ class TodoBar extends StatelessWidget {
                           elevation: 3,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          side: state.barIndex == BarIndex.completed
+                          side: barIndex == BarIndex.completed
                               ? const BorderSide(color: Colors.red)
                               : BorderSide.none),
-                      onPressed: state.taskEntries.isEmpty ? null : () {
+                      onPressed: isTasksEmpty ? null : () {
                         context
                             .read<TodoListCubit>()
                             .setBarItemIndex(BarIndex.completed);
@@ -71,7 +77,9 @@ class TodoBar extends StatelessWidget {
                     elevation: 3,
                     shape: const LinearBorder(),
                   ),
-                  onPressed: state.taskEntries.values.where((element) => element.isCompleted).isEmpty ? null : () {
+                  onPressed: state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+                    return tasks.where((element) => element.isCompleted).isEmpty;
+                  }, orElse: ()=>true) ? null : () {
                     context.read<TodoListCubit>().clearCompletedTasks();
                   },
                   child: Text("bottombar_clear".tr()))

@@ -24,7 +24,7 @@ class _NewTodoState extends State<NewTodo> {
         child: Row(
           children: [
             Visibility(
-                visible: state.taskEntries.isNotEmpty,
+                visible: true/* state.taskEntries.isNotEmpty */,
                 maintainState: true,
                 maintainAnimation: true,
                 maintainSize: true,

@@ -15,7 +15,9 @@ class ItemsTopRow extends StatelessWidget {
       children: [
         BlocBuilder<TodoListCubit, TodoListState>(
           builder: (context, state) {
-            final isEmpty = state.taskEntries.isEmpty;
+            final isEmpty = state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+              return taskEntries.isEmpty;
+            }, orElse: () { return true; });
             return (IconButton(
               disabledColor:
                   Theme.of(context).disabledColor,
@@ -33,9 +35,10 @@ class ItemsTopRow extends StatelessWidget {
                   color: isEmpty
                       ? Theme.of(context).disabledColor
                       : null),
-              isSelected: !state.taskEntries.values
-                  .any((element) => !element.isCompleted),
-              onPressed: state.taskEntries.isEmpty
+              isSelected: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+                return !taskEntries.any((element) => !element.isCompleted);
+              }, orElse: (){ return false;}),
+              onPressed: isEmpty
                   ? null
                   : () => context
                       .read<TodoListCubit>()
@@ -54,10 +57,9 @@ class ItemsTopRow extends StatelessWidget {
                 const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               "left".tr(args: [
-                state.taskEntries.values
-                    .where(
-                        (element) => !element.isCompleted)
-                    .length
+                state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+                  return tasks.where((element) => !element.isCompleted).length;
+                }, orElse: (){ return 0; })
                     .toString()
               ]),
               style: Theme.of(context).textTheme.bodySmall,

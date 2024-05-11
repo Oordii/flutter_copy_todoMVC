@@ -9,21 +9,21 @@ import '../models/task.dart';
 class TodoItems extends StatelessWidget {
   const TodoItems({super.key});
 
-  Iterable<MapEntry<dynamic, Task>> _getTasksForCurrentBarIndex(
-      Map<dynamic, Task> taskEntries, BarIndex barIndex) {
+  Iterable<Task> _getTasksForCurrentBarIndex(
+      List<Task> tasks, BarIndex barIndex) {
     switch (barIndex) {
       case BarIndex.all:
-        return taskEntries.entries;
+        return tasks;
       case BarIndex.active:
         final entries =
-            taskEntries.entries.where((entry) => !entry.value.isCompleted);
+            tasks.where((task) => !task.isCompleted);
         return entries;
       case BarIndex.completed:
         final entries =
-            taskEntries.entries.where((entry) => entry.value.isCompleted);
+            tasks.where((task) => task.isCompleted);
         return entries;
       default:
-        return taskEntries.entries;
+        return tasks;
     }
   }
 
@@ -31,13 +31,22 @@ class TodoItems extends StatelessWidget {
   Widget build(BuildContext context) {              
     return (BlocBuilder<TodoListCubit, TodoListState>(
       builder: (context, state) {
-        if (state.taskEntries.isNotEmpty) {
-          return (Column(
-            children: _getTasksForCurrentBarIndex(state.taskEntries, state.barIndex).map((e) => TodoRow(taskEntry: e)).toList() ,
-          ));
-        } else {
-          return (Container());
-        }
+        context.read<TodoListCubit>().init();
+        return state.when(
+          initial: (){
+            return Container();
+          }, 
+          loading: (){
+            return const CircularProgressIndicator();
+          }, 
+          success: (tasks, barIndex, editedTaskId){
+            return Column(
+              children: _getTasksForCurrentBarIndex(tasks, barIndex).map((e) => TodoRow(task: e)).toList(),
+            );
+          }, 
+          error: (errorMessage){
+            return Text(errorMessage);
+          });
       },
     ));
   }

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TodoRow extends StatefulWidget {
-  const TodoRow({super.key, required this.taskEntry});
+  const TodoRow({super.key, required this.task});
 
-  final MapEntry<dynamic, Task> taskEntry;
+  final Task task;
 
   @override
   State<TodoRow> createState() => TodoRowState();
@@ -40,19 +40,20 @@ class TodoRowState extends State<TodoRow> {
   }
 
   void _submitText() {
-    final updatedTask = widget.taskEntry.value.copyWith(name: _textEditingController.text);
-    final updatedEntry = widget.taskEntry.
-    context.read<TodoListCubit>().updateTask(widget.taskEntry);
+    final updatedTask = widget.task.copyWith(name: _textEditingController.text);
+    context.read<TodoListCubit>().updateTask(updatedTask);
   }
 
   @override
   Widget build(BuildContext context) {
-    _textEditingController.text = widget.taskEntry.value.name;
+    _textEditingController.text = widget.task.name;
 
     return (BlocBuilder<TodoListCubit, TodoListState>(
         builder: (context, state) {
 
-      var isEditing = widget.taskEntry.key == state.editedEntryKey;
+      var isEditing = widget.task.id == state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+        return editedTaskId;
+      }, orElse: ()=>null);
 
       if (isEditing) {
         Future.delayed(Duration.zero, () {
@@ -67,10 +68,9 @@ class TodoRowState extends State<TodoRow> {
           children: [
             Checkbox(
               activeColor: Colors.green,
-              value: widget.taskEntry.value.isCompleted,
+              value: widget.task.isCompleted,
               onChanged: (value) {
-                widget.taskEntry.value.isCompleted = value ?? false;
-                context.read<TodoListCubit>().updateTask(widget.taskEntry);
+                context.read<TodoListCubit>().updateTask(widget.task.copyWith(isCompleted: value ?? false));
               },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25)),
@@ -89,8 +89,8 @@ class TodoRowState extends State<TodoRow> {
               },
               enabled: isEditing,
               style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
-                color: widget.taskEntry.value.isCompleted ? Theme.of(context).dividerColor : null,
-                decoration: widget.taskEntry.value.isCompleted
+                color: widget.task.isCompleted ? Theme.of(context).dividerColor : null,
+                decoration: widget.task.isCompleted
                       ? TextDecoration.lineThrough
                       : TextDecoration.none)
               ),
@@ -113,7 +113,7 @@ class TodoRowState extends State<TodoRow> {
                     onPressed: () {
                       context
                           .read<TodoListCubit>()
-                          .setEditedEntryKey(widget.taskEntry.key);
+                          .setEditedEntryKey(widget.task.id);
                     },
                     icon: const Icon(Icons.edit)),
                 },
@@ -122,7 +122,7 @@ class TodoRowState extends State<TodoRow> {
                     onPressed: () {
                       context
                           .read<TodoListCubit>()
-                          .deleteTask(widget.taskEntry);
+                          .deleteTask(widget.task);
                     },
                     icon: const Icon(
                       Icons.delete,
