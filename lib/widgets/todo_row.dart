@@ -40,7 +40,8 @@ class TodoRowState extends State<TodoRow> {
   }
 
   void _submitText() {
-    widget.taskEntry.value.name = _textEditingController.text;
+    final updatedTask = widget.taskEntry.value.copyWith(name: _textEditingController.text);
+    final updatedEntry = widget.taskEntry.
     context.read<TodoListCubit>().updateTask(widget.taskEntry);
   }
 

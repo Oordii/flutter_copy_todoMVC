@@ -19,13 +19,11 @@ class TaskService {
   void toggleAllTasks() async {
     if (_box.values.any((element) => !element.isCompleted)) {
       _box.toMap().forEach((key, value) async {
-        value.isCompleted = true;
-        await _box.put(key, value);
+        await _box.put(key, value.copyWith(isCompleted: true));
       });
     } else {
       _box.toMap().forEach((key, value) async {
-        value.isCompleted = false;
-        await _box.put(key, value);
+        await _box.put(key, value.copyWith(isCompleted: false));
       });
     }
   }

@@ -1,22 +1,20 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'package:hive_flutter/adapters.dart';
 
+part 'task.freezed.dart';
 part 'task.g.dart';
 
-@HiveType(typeId: 1)
-class Task{
-   Task({required this.name, this.isCompleted = false});
+@freezed
+class Task with _$Task{
+  @HiveType(typeId: 1, adapterName: 'TaskAdapter')
+  const factory Task({
+    @HiveField(0)
+    required String name,
+    @HiveField(1)
+    @Default(false)
+    bool isCompleted,
+  }) = _Task;
 
-  @HiveField(0)
-  String name;
-  @HiveField(1)
-  bool isCompleted;
-
-  Task copyWith({String? name, bool? isCompleted}) {
-    return Task(
-      name: name ?? this.name,
-      isCompleted: isCompleted ?? this.isCompleted,
-    );
-  }
+ factory Task.fromJson(Map<String, dynamic> json) => _$Task(json);
 }
