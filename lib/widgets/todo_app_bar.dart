@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-class TodoAppBar extends StatelessWidget implements PreferredSizeWidget{
-  const TodoAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
+class TodoAppBar extends StatelessWidget implements PreferredSizeWidget {
+  const TodoAppBar({super.key})
+      : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;
@@ -17,5 +18,4 @@ class TodoAppBar extends StatelessWidget implements PreferredSizeWidget{
       elevation: 3,
     );
   }
-  
 }

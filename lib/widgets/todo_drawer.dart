@@ -19,10 +19,9 @@ class TodoDrawer extends StatelessWidget {
             height: 115,
             width: MediaQuery.of(context).size.width,
             child: DrawerHeader(
-                child: Text(
-              "todos",
-              style: Theme.of(context).textTheme.displaySmall
-            )),
+              child: Text("todos",
+                  style: Theme.of(context).textTheme.displaySmall),
+            ),
           ),
           Expanded(
             child: ListView(
