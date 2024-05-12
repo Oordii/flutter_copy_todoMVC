@@ -1,6 +1,11 @@
 part of 'settings_cubit.dart';
 
-class SettingsState {
-  SettingsState({required this.themeMode});
-  ThemeMode themeMode;
+@freezed
+class SettingsState with _$SettingsState{
+  const SettingsState._();
+
+  factory SettingsState({
+    @Default(ThemeMode.system)
+    ThemeMode themeMode
+  }) = _SettingsState;
 }
