@@ -1,24 +1,17 @@
 
+import 'package:copy_todo_mvc/main.dart';
+import 'package:copy_todo_mvc/services/repositories/abstract_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class SettingsService {
-  SettingsService();
-
-  final box = Hive.box('settings');
+  final Repository _repository;
+  SettingsService() : _repository = getIt.get<Repository>();
 
   Future<void> setTheme(ThemeMode mode) async {
-    await box.put('isDarkMode', mode == ThemeMode.dark ? true : false);
+    await _repository.setTheme(mode);
   }
 
   Future<ThemeMode> getTheme() async {
-    var isDarkMode = await box.get('isDarkMode');
-
-    if (isDarkMode == null){
-      isDarkMode = ThemeMode.system == ThemeMode.dark ? true : false;
-      await box.put('isDarkMode', isDarkMode);
-    }
-    
-    return  isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    return await _repository.getTheme();
   }
 }

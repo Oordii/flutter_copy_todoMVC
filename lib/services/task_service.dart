@@ -1,53 +1,51 @@
 
+import 'package:copy_todo_mvc/main.dart';
 import 'package:copy_todo_mvc/models/task.dart';
-import 'package:hive/hive.dart';
+import 'package:copy_todo_mvc/services/repositories/abstract_repository.dart';
 
 class TaskService {
-  TaskService();
-
-  final _box = Hive.box<Task>('tasks');
+  final Repository _repository;
+  TaskService():_repository = getIt.get<Repository>();
 
   List<Task> getAll() {
-    return _box.values.toList();
+    return _repository.getAllTasks();
   }
 
   Future<int> addTask(String taskName) async {
+    final tasks = _repository.getAllTasks();
     int id = 0;
-    if (_box.isEmpty){
+    if (tasks.isEmpty){
       id = 1;
     } else {
-      id = _box.values.last.id + 1;
+      id = tasks.last.id + 1;
     }
     final task = Task(id: id, name: taskName, isCompleted: false);
-    await _box.put(task.id, task);
+    await _repository.addTask(task);
     return task.id;
   }
 
   void toggleAllTasks() async {
-    if (_box.values.any((element) => !element.isCompleted)) {
-      _box.toMap().forEach((key, value) async {
-        await _box.put(key, value.copyWith(isCompleted: true));
-      });
-    } else {
-      _box.toMap().forEach((key, value) async {
-        await _box.put(key, value.copyWith(isCompleted: false));
-      });
+    final tasks = _repository.getAllTasks();
+    final bool anyUncompleted = tasks.any((task) => !task.isCompleted);
+    for (var task in tasks) {
+      _repository.updateTask(task.copyWith(isCompleted: anyUncompleted));
     }
   }
 
   void updateTask(Task task) async {
-    await _box.put(task.id, task);
+    await _repository.updateTask(task);
   }
 
   void deleteTask(Task task) async {
-    await _box.delete(task.id);
+    await _repository.deleteTask(task);
   }
 
   void clearCompleted() async {
-    _box.toMap().forEach((key, value) async {
-      if (value.isCompleted) {
-        await _box.delete(key);
+    final tasks = _repository.getAllTasks();
+    for (final task in tasks){
+      if(task.isCompleted){
+        _repository.deleteTask(task);
       }
-    });
+    }
   }
 }
