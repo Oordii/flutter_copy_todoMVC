@@ -82,10 +82,7 @@ class TodoListCubit extends Cubit<TodoListState> {
   }
 
   void setBarItemIndex(BarIndex index) {
-    emit(TodoListState.success(tasks: _taskService.getAll(), 
-    barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
-          return barIndex;
-        }, orElse: (){return BarIndex.all;}),));
+    emit(TodoListState.success(tasks: _taskService.getAll(), barIndex: index));
   }
 
   void clearCompletedTasks() async {
