@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:copy_todo_mvc/models/task.dart';
+import 'firebase_options.dart';
 
-import 'models/task.dart';
 
 final getIt = GetIt.instance;
 
@@ -25,6 +27,10 @@ void setup() {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   await Hive.initFlutter();
   Hive.registerAdapter(TaskAdapter());
@@ -59,15 +65,16 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => TodoListCubit()),
         BlocProvider(create: (context) => SettingsCubit())
       ],
-      child: BlocBuilder<SettingsCubit, SettingsState>(
-        builder: (context, state) {
+      child: Builder(
+        builder: (context) {
+          final settingsState = context.watch<SettingsCubit>().state;
           return MaterialApp.router(
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
             routerConfig: _appRouter.config(),
             title: 'TodoMVC copy',
-            themeMode: state.themeMode,
+            themeMode: settingsState.themeMode,
             theme: GlobalTheme.light(),
             darkTheme: GlobalTheme.dark(),
             builder: (context, child) => child!,
