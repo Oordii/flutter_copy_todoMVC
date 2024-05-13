@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1032816845988",
+    "project_id": "todomvc-copy",
+    "storage_bucket": "todomvc-copy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1032816845988:android:51a278e0e6ad113c1ef231",
+        "android_client_info": {
+          "package_name": "com.example.copy_todo_mvc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgZRo82Ug64OoMpiV_xkvrRNH1IYOym_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
