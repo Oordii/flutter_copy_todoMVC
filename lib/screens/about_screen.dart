@@ -9,7 +9,7 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ( Layout(
+    return Layout(
       child: Container(
         constraints: const BoxConstraints.expand(height: 200),
         margin: const EdgeInsets.only(top: 40),
@@ -25,6 +25,6 @@ class AboutScreen extends StatelessWidget {
           ),
         ),
       ),
-    ));
+    );
   }
 }
