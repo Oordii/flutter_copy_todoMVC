@@ -10,20 +10,21 @@ class TodoBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return (BlocBuilder<TodoListCubit, TodoListState>(
-      builder: (context, state) {
+    return Builder(
+      builder: (context) {
+        final todoListState = context.watch<TodoListCubit>().state;
         final isTasksEmpty =
-            state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+            todoListState.maybeWhen(success: (tasks, barIndex, editedTaskId) {
           return tasks.isEmpty;
         }, orElse: () {
           return true;
         });
-        final barIndex = state.maybeWhen(
+        final barIndex = todoListState.maybeWhen(
             success: (tasks, barIndex, editedTaskId) {
               return barIndex;
             },
             orElse: () => BarIndex.all);
-        return (Wrap(
+        return Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           alignment: WrapAlignment.spaceAround,
           children: [
@@ -88,7 +89,7 @@ class TodoBar extends StatelessWidget {
                   elevation: 3,
                   shape: const LinearBorder(),
                 ),
-                onPressed: state.maybeWhen(
+                onPressed: todoListState.maybeWhen(
                         success: (tasks, barIndex, editedTaskId) {
                           return tasks
                               .where((element) => element.isCompleted)
@@ -101,8 +102,8 @@ class TodoBar extends StatelessWidget {
                       },
                 child: Text("bottombar_clear".tr()))
           ],
-        ));
+        );
       },
-    ));
+    );
   }
 }

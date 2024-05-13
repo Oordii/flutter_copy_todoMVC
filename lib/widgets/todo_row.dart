@@ -48,95 +48,92 @@ class TodoRowState extends State<TodoRow> {
   @override
   Widget build(BuildContext context) {
     _textEditingController.text = widget.task.name;
+    final state = context.watch<TodoListCubit>().state;
+    var isEditing = widget.task.id ==
+        state.maybeWhen(
+            success: (tasks, barIndex, editedTaskId) {
+              return editedTaskId;
+            },
+            orElse: () => null);
 
-    return (BlocBuilder<TodoListCubit, TodoListState>(
-        builder: (context, state) {
-      var isEditing = widget.task.id ==
-          state.maybeWhen(
-              success: (tasks, barIndex, editedTaskId) {
-                return editedTaskId;
+    if (isEditing) {
+      Future.delayed(Duration.zero, () {
+        focusNode.requestFocus();
+      });
+    }
+
+    return Card(
+      clipBehavior: Clip.hardEdge,
+      elevation: 2,
+      child: Row(
+        children: [
+          Checkbox(
+            splashRadius: 15,
+            value: widget.task.isCompleted,
+            onChanged: (value) {
+              context.read<TodoListCubit>().updateTask(
+                  widget.task.copyWith(isCompleted: value ?? false));
+            },
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          ),
+          Expanded(
+            child: TextField(
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              focusNode: focusNode,
+              controller: _textEditingController,
+              onTapOutside: (PointerDownEvent event) {
+                FocusManager.instance.primaryFocus?.unfocus();
               },
-              orElse: () => null);
-
-      if (isEditing) {
-        Future.delayed(Duration.zero, () {
-          focusNode.requestFocus();
-        });
-      }
-
-      return Card(
-        clipBehavior: Clip.hardEdge,
-        elevation: 2,
-        child: (Row(
-          children: [
-            Checkbox(
-              splashRadius: 15,
-              value: widget.task.isCompleted,
-              onChanged: (value) {
-                context.read<TodoListCubit>().updateTask(
-                    widget.task.copyWith(isCompleted: value ?? false));
+              onSubmitted: (value) {
+                _submitText();
               },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25)),
+              enabled: isEditing,
+              style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
+                  color: widget.task.isCompleted
+                      ? Theme.of(context).dividerColor
+                      : null,
+                  decoration: widget.task.isCompleted
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none)),
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'todo_hint'.tr(),
+                  hintStyle: Theme.of(context).textTheme.labelSmall),
             ),
-            Expanded(
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                focusNode: focusNode,
-                controller: _textEditingController,
-                onTapOutside: (PointerDownEvent event) {
-                  FocusManager.instance.primaryFocus?.unfocus();
-                },
-                onSubmitted: (value) {
-                  _submitText();
-                },
-                enabled: isEditing,
-                style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
-                    color: widget.task.isCompleted
-                        ? Theme.of(context).dividerColor
-                        : null,
-                    decoration: widget.task.isCompleted
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none)),
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'todo_hint'.tr(),
-                    hintStyle: Theme.of(context).textTheme.labelSmall),
-              ),
-            ),
-            Row(
-              children: [
-                if (isEditing) ...{
-                  const IconButton(
-                      visualDensity: VisualDensity.compact,
-                      onPressed: null,
-                      icon: Icon(Icons.done)),
-                } else ...{
-                  IconButton(
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        context
-                            .read<TodoListCubit>()
-                            .setEditedEntryKey(widget.task.id);
-                      },
-                      icon: const Icon(Icons.edit)),
-                },
+          ),
+          Row(
+            children: [
+              if (isEditing) ...{
+                const IconButton(
+                    visualDensity: VisualDensity.compact,
+                    onPressed: null,
+                    icon: Icon(Icons.done)),
+              } else ...{
                 IconButton(
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () {
-                    context.read<TodoListCubit>().deleteTask(widget.task);
-                  },
-                  icon: const Icon(
-                    Icons.delete,
-                    color: AppColor.titleRed,
-                  ),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () {
+                      context
+                          .read<TodoListCubit>()
+                          .setEditedEntryKey(widget.task.id);
+                    },
+                    icon: const Icon(Icons.edit)),
+              },
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  context.read<TodoListCubit>().deleteTask(widget.task);
+                },
+                icon: const Icon(
+                  Icons.delete,
+                  color: AppColor.titleRed,
                 ),
-              ],
-            )
-          ],
-        )),
-      );
-    }));
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }

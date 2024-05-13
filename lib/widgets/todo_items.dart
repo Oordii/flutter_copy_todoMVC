@@ -26,28 +26,25 @@ class TodoItems extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<TodoListCubit>().state.maybeWhen(
+    final state = context.watch<TodoListCubit>().state;
+    state.maybeWhen(
         initial: () {
           context.read<TodoListCubit>().init();
         },
         orElse: () {});
 
-    return (BlocBuilder<TodoListCubit, TodoListState>(
-      builder: (context, state) {
-        return state.when(initial: () {
-          return Container();
-        }, loading: () {
-          return const Center(child: CircularProgressIndicator());
-        }, success: (tasks, barIndex, editedTaskId) {
-          return Column(
-            children: _getTasksForCurrentBarIndex(tasks, barIndex)
-                .map((e) => TodoRow(task: e))
-                .toList(),
-          );
-        }, error: (errorMessage) {
-          return Text(errorMessage);
-        });
-      },
-    ));
+    return state.when(initial: () {
+      return Container();
+    }, loading: () {
+      return const Center(child: CircularProgressIndicator());
+    }, success: (tasks, barIndex, editedTaskId) {
+      return Column(
+        children: _getTasksForCurrentBarIndex(tasks, barIndex)
+            .map((e) => TodoRow(task: e))
+            .toList(),
+      );
+    }, error: (errorMessage) {
+      return Text(errorMessage);
+    });
   }
 }

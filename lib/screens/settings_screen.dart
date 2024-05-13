@@ -36,8 +36,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      BlocBuilder<SettingsCubit, SettingsState>(
-                        builder: (context, state) {
+                      Builder(
+                        builder: (context) {
+                          final settingsState = context.watch<SettingsCubit>().state;
                           return Row(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,7 +52,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                 ],
                               ),
-                              Switch(value: state.themeMode == ThemeMode.dark, 
+                              Switch(value: settingsState.themeMode == ThemeMode.dark, 
                               onChanged: (value) {
                                 context.read<SettingsCubit>().setTheme(value ? ThemeMode.dark : ThemeMode.light);
                               })

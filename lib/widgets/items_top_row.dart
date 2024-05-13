@@ -13,10 +13,11 @@ class ItemsTopRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        BlocBuilder<TodoListCubit, TodoListState>(
-          builder: (context, state) {
+        Builder(
+          builder: (context) {
+            final todoListState = context.watch<TodoListCubit>().state;
             final isEmpty =
-                state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
+                todoListState.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
               return taskEntries.isEmpty;
             }, orElse: () {
               return true;
@@ -40,7 +41,7 @@ class ItemsTopRow extends StatelessWidget {
                   color: isEmpty ? Theme.of(context).disabledColor : null),
               selectedIcon: Icon(Icons.remove_done,
                   color: isEmpty ? Theme.of(context).disabledColor : null),
-              isSelected: state.maybeWhen(
+              isSelected: todoListState.maybeWhen(
                   success: (taskEntries, barIndex, editedTaskId) {
                 return !taskEntries.any((element) => !element.isCompleted);
               }, orElse: () {
@@ -56,12 +57,13 @@ class ItemsTopRow extends StatelessWidget {
           "title".tr(context: context),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        BlocBuilder<TodoListCubit, TodoListState>(builder: (context, state) {
+        Builder(builder: (context) {
+          final todoListState = context.watch<TodoListCubit>().state;
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Text(
               "left".tr(args: [
-                state.maybeWhen(success: (tasks, barIndex, editedTaskId) {
+                todoListState.maybeWhen(success: (tasks, barIndex, editedTaskId) {
                   return tasks.where((element) => !element.isCompleted).length;
                 }, orElse: () {
                   return 0;
