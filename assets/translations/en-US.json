@@ -5,7 +5,6 @@
     "settings" : "Settings",
     "settings_theme" : "Dark Theme",
     "settings_locale" : "Language",
-    "new_todo_hint" : "What needs to be done?",
     "bottombar_all" : "All",
     "bottombar_active" : "Active",
     "bottombar_complete" : "Completed",
@@ -13,5 +12,6 @@
     "drawer_home" : "Home",
     "drawer_settings" : "Settings",
     "drawer_about" : "About",
-    "todo_hint" : "What needs to be done?"
+    "todo_hint" : "What needs to be done?",
+    "auth_email" : "Sign in with Email"
 }
