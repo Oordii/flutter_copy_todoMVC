@@ -1,17 +1,41 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:copy_todo_mvc/main.dart';
+import 'package:copy_todo_mvc/router/app_route.dart';
 import 'package:copy_todo_mvc/router/app_route.gr.dart';
 import 'package:copy_todo_mvc/widgets/todo_app_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 @RoutePage()
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+class SignInScreen extends StatefulWidget {
+  const SignInScreen({super.key});
+
+  Future<void> signInWithGoogle() async {
+  // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    await getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
+  }
 
   @override
-  State<AuthScreen> createState() => _AuthScreenState();
+  State<SignInScreen> createState() => _SignInScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -28,10 +52,10 @@ class _AuthScreenState extends State<AuthScreen> {
                 margin: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: OutlinedButton(
                   onPressed: () {
-                    context.router.navigate(const AuthEmailRoute());
+                    context.router.navigate(const SignInEmailRoute());
                   },
                   style: const ButtonStyle(
-                    padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0)),
+                    padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0)),
                   ),
                   child: const SizedBox(
                     width: 240,
@@ -51,9 +75,11 @@ class _AuthScreenState extends State<AuthScreen> {
                 width: 240,
                 margin: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await widget.signInWithGoogle();
+                  },
                   style: const ButtonStyle(
-                    padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0))
+                    padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0))
                   ),
                   child: const SizedBox(
                     width: 240,
@@ -78,7 +104,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: OutlinedButton(
                   onPressed: () {},
                   style: const ButtonStyle(
-                    padding: MaterialStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0))
+                    padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0))
                   ),
                   child: const SizedBox(
                     width: 240,
