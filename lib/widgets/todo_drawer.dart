@@ -46,7 +46,7 @@ class TodoDrawer extends StatelessWidget {
             title: Text("drawer_settings".tr()),
             onTap: () async {
               Navigator.pop(context);
-              await context.router.push(const SettingsRoute());
+              await context.router.navigate(const SettingsRoute());
             },
             selected: currentRouteName == SettingsRoute.name,
           ),
@@ -54,7 +54,7 @@ class TodoDrawer extends StatelessWidget {
             leading: const Icon(Icons.question_mark),
             title: Text("drawer_about".tr()),
             onTap: () async {
-              await context.router.replace(const AboutRoute());
+              await context.router.navigate(const AboutRoute());
             },
             selected: currentRouteName == AboutRoute.name,
           )
