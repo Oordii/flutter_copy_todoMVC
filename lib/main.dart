@@ -22,6 +22,7 @@ void setup() {
   getIt.registerSingleton<Repository>(HiveRepository());
   getIt.registerSingleton<TaskService>(TaskService());
   getIt.registerSingleton<SettingsService>(SettingsService());
+  getIt.registerSingleton<AppRouter>(AppRouter());
 }
 
 Future<void> main() async {
@@ -49,14 +50,12 @@ Future<void> main() async {
     path: "assets/translations",
     fallbackLocale: const Locale('en', 'US'),
     startLocale: const Locale('en', 'US'),
-    child: MyApp(),
+    child: const MyApp(),
     ));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
-
-  final _appRouter = AppRouter();
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +71,7 @@ class MyApp extends StatelessWidget {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
-            routerConfig: _appRouter.config(),
+            routerConfig: getIt.get<AppRouter>().config(),
             title: 'TodoMVC copy',
             themeMode: settingsState.themeMode,
             theme: GlobalTheme.light(),
