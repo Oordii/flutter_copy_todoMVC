@@ -5,6 +5,7 @@ import 'package:copy_todo_mvc/router/app_route.gr.dart';
 import 'package:copy_todo_mvc/widgets/todo_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 
@@ -13,7 +14,9 @@ class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
 
   Future<void> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final goggleSignIn = GoogleSignIn();
+    goggleSignIn.disconnect();
+    final GoogleSignInAccount? googleUser = await goggleSignIn.signIn();
 
     final GoogleSignInAuthentication? googleAuth =
         await googleUser?.authentication;
@@ -24,7 +27,14 @@ class SignInScreen extends StatefulWidget {
     );
 
     await FirebaseAuth.instance.signInWithCredential(credential);
-    await getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
+  }
+
+  Future<void> signInWithFacebook() async {
+  final LoginResult loginResult = await FacebookAuth.instance.login();
+
+  final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+  await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
   }
 
   @override
@@ -32,6 +42,17 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((user) async {
+      if(user != null){
+        await getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -98,7 +119,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 width: 240,
                 margin: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await widget.signInWithFacebook();
+                  },
                   style: const ButtonStyle(
                     padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.fromLTRB(8, 0, 0, 0))
                   ),

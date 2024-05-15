@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1032816845988',
     projectId: 'todomvc-copy',
     storageBucket: 'todomvc-copy.appspot.com',
+    androidClientId: '1032816845988-eb8i7h85sbir6kils9n8pdenpr9lhuqi.apps.googleusercontent.com',
+    iosClientId: '1032816845988-5n13djjc6n5fi0djhas4mk2qap7837rv.apps.googleusercontent.com',
     iosBundleId: 'com.example.copyTodoMvc',
   );
 
