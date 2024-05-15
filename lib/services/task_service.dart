@@ -7,16 +7,19 @@ class TaskService {
   final Repository _repository;
   TaskService():_repository = getIt.get<Repository>();
 
-  List<Task> getAll() {
-    return _repository.getAllTasks();
+  Future<List<Task>> getAll() async {
+    final tasks = await _repository.getAllTasks();
+    tasks.sort((a, b) => a.id.compareTo(b.id));
+    return tasks;
   }
 
   Future<int> addTask(String taskName) async {
-    final tasks = _repository.getAllTasks();
+    final tasks = await _repository.getAllTasks();
     int id = 0;
     if (tasks.isEmpty){
       id = 1;
     } else {
+      tasks.sort((a, b) => a.id.compareTo(b.id));
       id = tasks.last.id + 1;
     }
     final task = Task(id: id, name: taskName, isCompleted: false);
@@ -25,7 +28,7 @@ class TaskService {
   }
 
   void toggleAllTasks() async {
-    final tasks = _repository.getAllTasks();
+    final tasks = await _repository.getAllTasks();
     final bool anyUncompleted = tasks.any((task) => !task.isCompleted);
     for (var task in tasks) {
       _repository.updateTask(task.copyWith(isCompleted: anyUncompleted));
@@ -41,7 +44,7 @@ class TaskService {
   }
 
   void clearCompleted() async {
-    final tasks = _repository.getAllTasks();
+    final tasks = await _repository.getAllTasks();
     for (final task in tasks){
       if(task.isCompleted){
         _repository.deleteTask(task);
