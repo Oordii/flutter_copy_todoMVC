@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:copy_todo_mvc/cubits/settings_cubit.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/global_theme.dart';
@@ -19,6 +20,7 @@ import 'firebase_options.dart';
 final getIt = GetIt.instance;
 
 void setup() {
+  getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
   getIt.registerSingleton<Repository>(HiveRepository());
   getIt.registerSingleton<TaskService>(TaskService());
   getIt.registerSingleton<SettingsService>(SettingsService());
