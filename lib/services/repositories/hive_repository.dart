@@ -23,7 +23,7 @@ class HiveRepository implements Repository {
   }
 
   @override
-  List<Task> getAllTasks() {
+  Future<List<Task>> getAllTasks() async {
     return _taskBox.values.toList();
   }
 
@@ -43,7 +43,7 @@ class HiveRepository implements Repository {
   }
   
   @override
-  Task getTaskById(int id) {
+  Future<Task> getTaskById(int id) async {
     return _taskBox.values.singleWhere((element) => element.id == id);
   }
 }
