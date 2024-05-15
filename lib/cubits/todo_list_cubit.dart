@@ -12,12 +12,12 @@ class TodoListCubit extends Cubit<TodoListState> {
 
   final _taskService = TaskService();
 
-  void init() {
+  Future<void> init() async {
     emit(const TodoListState.loading());
 
     List<Task> tasks = <Task>[];
     try{
-      tasks = _taskService.getAll();
+      tasks = await _taskService.getAll();
     } catch (error){
       emit(TodoListState.error(error.toString()));
     }
@@ -31,7 +31,7 @@ class TodoListCubit extends Cubit<TodoListState> {
   addTask(String taskName) async {
     final newEntryKey = await _taskService.addTask(taskName);
     emit(TodoListState.success(
-        tasks: _taskService.getAll(),
+        tasks: await _taskService.getAll(),
         barIndex:
             state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
           return barIndex;
@@ -41,9 +41,9 @@ class TodoListCubit extends Cubit<TodoListState> {
         editedTaskId: newEntryKey));
   }
 
-  setEditedEntryKey(int key) {
+  setEditedEntryKey(int key) async {
     emit(TodoListState.success(
-        tasks: _taskService.getAll(),
+        tasks: await _taskService.getAll(),
         barIndex:
             state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
           return barIndex;
@@ -56,7 +56,7 @@ class TodoListCubit extends Cubit<TodoListState> {
   toggleAllTasks() async {
     _taskService.toggleAllTasks();
     emit(TodoListState.success(
-        tasks: _taskService.getAll(),
+        tasks: await _taskService.getAll(),
         barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
           return barIndex;
         }, orElse: (){return BarIndex.all;}),));
@@ -65,7 +65,7 @@ class TodoListCubit extends Cubit<TodoListState> {
   Future<void> updateTask(Task task) async {
     _taskService.updateTask(task);
     emit(TodoListState.success(
-        tasks: _taskService.getAll(),
+        tasks: await _taskService.getAll(),
         barIndex: state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
           return barIndex;
         }, orElse: (){return BarIndex.all;}),
@@ -75,18 +75,18 @@ class TodoListCubit extends Cubit<TodoListState> {
   Future<void> deleteTask(Task task) async {
     _taskService.deleteTask(task);
     emit(TodoListState.success(
-        tasks: _taskService.getAll(),
+        tasks: await _taskService.getAll(),
         barIndex:state.maybeWhen(success: (taskEntries, barIndex, editedTaskId) {
           return barIndex;
         }, orElse: (){return BarIndex.all;})));
   }
 
-  void setBarItemIndex(BarIndex index) {
-    emit(TodoListState.success(tasks: _taskService.getAll(), barIndex: index));
+  void setBarItemIndex(BarIndex index) async {
+    emit(TodoListState.success(tasks: await _taskService.getAll(), barIndex: index));
   }
 
   void clearCompletedTasks() async {
     _taskService.clearCompleted();
-    emit(TodoListState.success(tasks: _taskService.getAll()));
+    emit(TodoListState.success(tasks: await _taskService.getAll()));
   }
 }
