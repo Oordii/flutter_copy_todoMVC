@@ -22,6 +22,8 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
   bool _isConfirmPasswordValid = false;
+  bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
   final _emailKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
   final _confirmPasswordKey = GlobalKey<FormFieldState>();
@@ -144,7 +146,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
                           padding: const EdgeInsets.only(top: 16),
                           child: TextFormField(
                             key: _passwordKey,
-                            obscureText: true,
+                            obscureText: !_passwordVisible,
                             enableSuggestions: false,
                             autocorrect: false,
                             focusNode: _passwordFocusNode,
@@ -152,8 +154,9 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
                               if (password == null || password.isEmpty) {
                                 return 'Can`t be empty';
                               }
-                              final regex = RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$');
-                              if (!regex.hasMatch(password)){
+                              final regex = RegExp(
+                                  r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$');
+                              if (!regex.hasMatch(password)) {
                                 return 'Password should contain at least one upper-, one lower case, one digit and be at least 8 charecters in length';
                               }
 
@@ -172,15 +175,27 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
                             onFieldSubmitted: (_) {
                               _confirmPasswordFocusNode.requestFocus();
                             },
-                            decoration:
-                                const InputDecoration(labelText: "Password", errorMaxLines: 3),
+                            decoration: InputDecoration(
+                              labelText: "Password",
+                              errorMaxLines: 3,
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                                icon: Icon(!_passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                              ),
+                            ),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: TextFormField(
                             key: _confirmPasswordKey,
-                            obscureText: true,
+                            obscureText: !_confirmPasswordVisible,
                             enableSuggestions: false,
                             autocorrect: false,
                             focusNode: _confirmPasswordFocusNode,
@@ -211,8 +226,20 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
                                     signinErrorSnackBar(context, _error!));
                               }
                             },
-                            decoration: const InputDecoration(
-                                labelText: 'Confirm password'),
+                            decoration: InputDecoration(
+                              labelText: 'Confirm password',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _confirmPasswordVisible =
+                                        !_confirmPasswordVisible;
+                                  });
+                                },
+                                icon: Icon(!_confirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                              ),
+                            ),
                           ),
                         )
                       ],

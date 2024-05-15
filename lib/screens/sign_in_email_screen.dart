@@ -21,6 +21,7 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
   String _password = '';
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
+  bool _passwordVisible = false;
   final _emailKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
   late FocusNode _passwordFocusNode;
@@ -127,7 +128,7 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                           padding: const EdgeInsets.only(top: 16),
                           child: TextFormField(
                             key: _passwordKey,
-                            obscureText: true,
+                            obscureText: !_passwordVisible,
                             enableSuggestions: false,
                             autocorrect: false,
                             focusNode: _passwordFocusNode,
@@ -150,14 +151,24 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                             onFieldSubmitted: (_) async {
                               await _submit();
                               if (context.mounted && _error != null) {
-                                final messenger = ScaffoldMessenger.of(context);
+                                final messenger =
+                                    ScaffoldMessenger.of(context);
                                 messenger.clearSnackBars();
                                 messenger.showSnackBar(
                                     signinErrorSnackBar(context, _error!));
                               }
                             },
-                            decoration:
-                                const InputDecoration(labelText: "Password"),
+                            decoration: InputDecoration(
+                                labelText: "Password",
+                                suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                                icon: Icon(!_passwordVisible ? Icons.visibility : Icons.visibility_off),
+                              )),
+                            
                           ),
                         ),
                       ],
@@ -171,9 +182,12 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                                     await _submit();
 
                                     if (context.mounted && _error != null) {
-                                      final messenger = ScaffoldMessenger.of(context);
+                                      final messenger =
+                                          ScaffoldMessenger.of(context);
                                       messenger.clearSnackBars();
-                                      messenger.showSnackBar(signinErrorSnackBar(context, _error!));
+                                      messenger.showSnackBar(
+                                          signinErrorSnackBar(
+                                              context, _error!));
                                     }
                                   }
                                 : null,
