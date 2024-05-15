@@ -4,7 +4,7 @@ import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/global_theme.dart';
 import 'package:copy_todo_mvc/router/app_route.dart';
 import 'package:copy_todo_mvc/services/repositories/abstract_repository.dart';
-import 'package:copy_todo_mvc/services/repositories/hive_repository.dart';
+import 'package:copy_todo_mvc/services/repositories/firestore_repository.dart';
 import 'package:copy_todo_mvc/services/settings_service.dart';
 import 'package:copy_todo_mvc/services/task_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -21,7 +21,7 @@ final getIt = GetIt.instance;
 
 void setup() {
   getIt.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
-  getIt.registerSingleton<Repository>(HiveRepository());
+  getIt.registerSingleton<Repository>(FirestoreRepository());
   getIt.registerSingleton<TaskService>(TaskService());
   getIt.registerSingleton<SettingsService>(SettingsService());
   getIt.registerSingleton<AppRouter>(AppRouter());
