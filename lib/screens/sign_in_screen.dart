@@ -26,6 +26,7 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   String? _error;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> signInWithGoogle() async {
     setState(() {
       _error = null;
+      _loading = true;
     });
 
     try {
@@ -51,6 +53,10 @@ class _SignInScreenState extends State<SignInScreen> {
       }
     } on FirebaseAuthException catch (e) {
       handleAuthException(e);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -84,6 +90,7 @@ class _SignInScreenState extends State<SignInScreen> {
   Future<void> signInWithFacebook() async {
     setState(() {
       _error = null;
+      _loading = true;
     });
 
     try {
@@ -94,6 +101,10 @@ class _SignInScreenState extends State<SignInScreen> {
       }
     } on FirebaseAuthException catch (e) {
       handleAuthException(e);
+    } finally {
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
@@ -132,38 +143,40 @@ class _SignInScreenState extends State<SignInScreen> {
       body: Align(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(48, 12, 48, 64),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              buildSignInButton(
-                icon: Icons.email,
-                child: Text("sign_in_email".tr()),
-                onPressed: () {
-                  context.router.navigate(const SignInEmailRoute());
-                },
-              ),
-              buildSignInButton(
-                icon: const AssetImage("assets/images/auth/google.png"),
-                child: Text("sign_in_google".tr()),
-                onPressed: () async {
-                  await signInWithGoogle();
-                  if (_error != null && context.mounted) {
-                    showSignInErrorSnackbar(context);
-                  }
-                },
-              ),
-              buildSignInButton(
-                icon: const AssetImage("assets/images/auth/facebook.png"),
-                child: Text("sign_in_facebook".tr()),
-                onPressed: () async {
-                  await signInWithFacebook();
-                  if (_error != null && context.mounted) {
-                    showSignInErrorSnackbar(context);
-                  }
-                },
-              ),
-            ],
-          ),
+          child: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    buildSignInButton(
+                      icon: Icons.email,
+                      child: Text("sign_in_email".tr()),
+                      onPressed: () {
+                        context.router.navigate(const SignInEmailRoute());
+                      },
+                    ),
+                    buildSignInButton(
+                      icon: const AssetImage("assets/images/auth/google.png"),
+                      child: Text("sign_in_google".tr()),
+                      onPressed: () async {
+                        await signInWithGoogle();
+                        if (_error != null && context.mounted) {
+                          showSignInErrorSnackbar(context);
+                        }
+                      },
+                    ),
+                    buildSignInButton(
+                      icon: const AssetImage("assets/images/auth/facebook.png"),
+                      child: Text("sign_in_facebook".tr()),
+                      onPressed: () async {
+                        await signInWithFacebook();
+                        if (_error != null && context.mounted) {
+                          showSignInErrorSnackbar(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
         ),
       ),
     );

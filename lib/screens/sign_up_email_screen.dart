@@ -25,6 +25,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
   bool _isConfirmPasswordValid = false;
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
+  bool _loading = false;
   final _emailKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
   final _confirmPasswordKey = GlobalKey<FormFieldState>();
@@ -58,6 +59,9 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
       });
       return;
     }
+    setState(() {
+      _loading = true;
+    });
 
     try {
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -70,6 +74,10 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         _error = _getErrorMessage(e.code);
+      });
+    } finally {
+      setState(() {
+        _loading = false;
       });
     }
   }
@@ -96,7 +104,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
   Widget _buildEmailField() {
     return TextFormField(
       key: _emailKey,
-      autofillHints: const [ AutofillHints.email ],
+      autofillHints: const [AutofillHints.email],
       keyboardType: TextInputType.emailAddress,
       validator: (email) {
         if (email == null || email.isEmpty) {
@@ -133,7 +141,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
       padding: const EdgeInsets.only(top: 16),
       child: TextFormField(
         key: _passwordKey,
-        autofillHints: const [ AutofillHints.password ],
+        autofillHints: const [AutofillHints.newPassword],
         obscureText: !_passwordVisible,
         enableSuggestions: false,
         autocorrect: false,
@@ -259,22 +267,24 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    AutofillGroup(
-                      child: Column(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _buildEmailField(),
-                          _buildPasswordField(),
-                          _buildConfirmPasswordField(context),
+                          AutofillGroup(
+                            child: Column(
+                              children: [
+                                _buildEmailField(),
+                                _buildPasswordField(),
+                                _buildConfirmPasswordField(context),
+                              ],
+                            ),
+                          ),
+                          _buildSignUpButton(context),
                         ],
                       ),
-                    ),
-                    _buildSignUpButton(context),
-                  ],
-                ),
               ),
             ),
           ),
