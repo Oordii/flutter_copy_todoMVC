@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:copy_todo_mvc/cubits/auth_cubit.dart';
 import 'package:copy_todo_mvc/cubits/settings_cubit.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/global_theme.dart';
@@ -102,7 +103,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => TodoListCubit()),
-        BlocProvider(create: (context) => SettingsCubit())
+        BlocProvider(create: (context) => SettingsCubit()),
+        BlocProvider(create: (context) => AuthCubit()),
       ],
       child: Builder(builder: (context) {
         final settingsState = context.watch<SettingsCubit>().state;
