@@ -25,6 +25,7 @@
     "confirm_pw": "Confirm password",
     "pws_dont_match": "Passwords don`t match",
     "email_or_pw_invalid": "Email or password is invalid",
+    "email_in_use": "Account with this email is already registered",
     "signup": "Sign up",
     "signout": "Sign out",
     "email_registered_with_diff_provider": "Account with this email is already registered with a different provider. You can link different providers in settings",
