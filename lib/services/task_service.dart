@@ -27,7 +27,7 @@ class TaskService {
     return task.id;
   }
 
-  void toggleAllTasks() async {
+  Future<void> toggleAllTasks() async {
     final tasks = await _repository.getAllTasks();
     final bool anyUncompleted = tasks.any((task) => !task.isCompleted);
     for (var task in tasks) {
@@ -35,15 +35,15 @@ class TaskService {
     }
   }
 
-  void updateTask(Task task) async {
+  Future<void> updateTask(Task task) async {
     await _repository.updateTask(task);
   }
 
-  void deleteTask(Task task) async {
+  Future<void> deleteTask(Task task) async {
     await _repository.deleteTask(task);
   }
 
-  void clearCompleted() async {
+  Future<void> clearCompleted() async {
     final tasks = await _repository.getAllTasks();
     for (final task in tasks){
       if(task.isCompleted){
