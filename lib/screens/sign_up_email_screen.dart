@@ -1,12 +1,10 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:copy_todo_mvc/main.dart';
-import 'package:copy_todo_mvc/router/app_route.dart';
-import 'package:copy_todo_mvc/router/app_route.gr.dart';
+import 'package:copy_todo_mvc/cubits/auth_cubit.dart';
 import 'package:copy_todo_mvc/widgets/signin_error_snackbar.dart';
 import 'package:copy_todo_mvc/widgets/todo_app_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
 class SignUpEmailScreen extends StatefulWidget {
@@ -17,7 +15,6 @@ class SignUpEmailScreen extends StatefulWidget {
 }
 
 class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
-  String? _error;
   String _email = '';
   String _password = '';
   bool _isEmailValid = false;
@@ -25,7 +22,6 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
   bool _isConfirmPasswordValid = false;
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
-  bool _loading = false;
   final _emailKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
   final _confirmPasswordKey = GlobalKey<FormFieldState>();
@@ -37,12 +33,6 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
     super.initState();
     _passwordFocusNode = FocusNode();
     _confirmPasswordFocusNode = FocusNode();
-
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
-      }
-    });
   }
 
   @override
@@ -50,55 +40,6 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
     _passwordFocusNode.dispose();
     _confirmPasswordFocusNode.dispose();
     super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (!_isEmailValid || !_isPasswordValid || !_isConfirmPasswordValid) {
-      setState(() {
-        _error = "email_or_pw_invalid".tr();
-      });
-      return;
-    }
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _email,
-        password: _password,
-      );
-      setState(() {
-        _error = null;
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _error = _getErrorMessage(e.code);
-      });
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
-
-  String _getErrorMessage(String code) {
-    switch (code) {
-      case 'invalid-email':
-        return 'email_invalid'.tr();
-      case 'email-already-in-use':
-        return 'email_or_pw_invalid'.tr();
-      case 'weak-password':
-        return 'weak_pw'.tr();
-      default:
-        return 'signup_failed'.tr();
-    }
-  }
-
-  void _showErrorSnackbar(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(signinErrorSnackBar(context, _error!));
   }
 
   Widget _buildEmailField() {
@@ -188,7 +129,7 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
     );
   }
 
-  Widget _buildConfirmPasswordField(BuildContext context) {
+  Widget _buildConfirmPasswordField() {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: TextFormField(
@@ -214,11 +155,8 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
         onTapOutside: (_) {
           FocusManager.instance.primaryFocus?.unfocus();
         },
-        onFieldSubmitted: (_) async {
-          await _submit();
-          if (_error != null && context.mounted) {
-            _showErrorSnackbar(context);
-          }
+        onFieldSubmitted: (_) {
+          context.read<AuthCubit>().signUpWithEmail(_email, _password);
         },
         decoration: InputDecoration(
           labelText: 'confirm_pw'.tr(),
@@ -242,11 +180,8 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
   Widget _buildSignUpButton(BuildContext context) {
     return OutlinedButton(
       onPressed: _isEmailValid && _isPasswordValid && _isConfirmPasswordValid
-          ? () async {
-              await _submit();
-              if (_error != null && context.mounted) {
-                _showErrorSnackbar(context);
-              }
+          ? () {
+              context.read<AuthCubit>().signUpWithEmail(_email, _password);
             }
           : null,
       child: Text("signup".tr()),
@@ -267,24 +202,42 @@ class _SignUpEmailScreenState extends State<SignUpEmailScreen> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: _loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          AutofillGroup(
-                            child: Column(
-                              children: [
-                                _buildEmailField(),
-                                _buildPasswordField(),
-                                _buildConfirmPasswordField(context),
-                              ],
-                            ),
-                          ),
-                          _buildSignUpButton(context),
-                        ],
-                      ),
+                child: Builder(
+                  builder: (context) {
+                    final state = context.watch<AuthCubit>().state;
+                    final loading = state.maybeWhen(
+                        loading: () => true, orElse: () => false);
+
+                    state.whenOrNull(error: (message) {
+                      if (message != null && context.mounted) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          final messenger = ScaffoldMessenger.of(context);
+                          messenger.clearSnackBars();
+                          messenger.showSnackBar(signinErrorSnackBar(context, message.tr()));
+                        });
+                      }
+                    });
+
+                    return loading
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              AutofillGroup(
+                                child: Column(
+                                  children: [
+                                    _buildEmailField(),
+                                    _buildPasswordField(),
+                                    _buildConfirmPasswordField(),
+                                  ],
+                                ),
+                              ),
+                              _buildSignUpButton(context),
+                            ],
+                          );
+                  },
+                ),
               ),
             ),
           ),
