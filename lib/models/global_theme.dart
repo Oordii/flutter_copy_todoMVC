@@ -13,7 +13,7 @@ class GlobalTheme {
       fontFamily: "Helvetica Neue",
       textButtonTheme: const TextButtonThemeData(
         style: ButtonStyle(
-          textStyle: MaterialStatePropertyAll<TextStyle>(
+          textStyle: WidgetStatePropertyAll<TextStyle>(
             TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 16,
@@ -75,7 +75,7 @@ class GlobalTheme {
       disabledColor: Colors.white10,
       textButtonTheme: const TextButtonThemeData(
         style: ButtonStyle(
-          textStyle: MaterialStatePropertyAll<TextStyle>(
+          textStyle: WidgetStatePropertyAll<TextStyle>(
             TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 16,
