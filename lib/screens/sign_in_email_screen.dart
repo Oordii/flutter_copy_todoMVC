@@ -1,12 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:copy_todo_mvc/main.dart';
-import 'package:copy_todo_mvc/router/app_route.dart';
+import 'package:copy_todo_mvc/cubits/auth_cubit.dart';
 import 'package:copy_todo_mvc/router/app_route.gr.dart';
 import 'package:copy_todo_mvc/widgets/signin_error_snackbar.dart';
 import 'package:copy_todo_mvc/widgets/todo_app_bar.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 @RoutePage()
 class SignInEmailScreen extends StatefulWidget {
@@ -17,13 +16,11 @@ class SignInEmailScreen extends StatefulWidget {
 }
 
 class _SignInEmailScreenState extends State<SignInEmailScreen> {
-  String? _error;
   String _email = '';
   String _password = '';
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
   bool _passwordVisible = false;
-  bool _loading = false;
   final _emailKey = GlobalKey<FormFieldState>();
   final _passwordKey = GlobalKey<FormFieldState>();
   late FocusNode _passwordFocusNode;
@@ -32,11 +29,6 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
-    FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
-      }
-    });
   }
 
   @override
@@ -45,46 +37,10 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_isEmailValid || !_isPasswordValid) {
-      setState(() {
-        _error = "email_or_pw_invalid".tr();
-      });
-      return;
-    }
-
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _email,
-        password: _password,
-      );
-      setState(() {
-        _error = null;
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        _error = _getErrorMessage(e.code);
-        _loading = false;
-      });
-    }
-  }
-
-  String _getErrorMessage(String code) {
-    switch (code) {
-      case 'invalid-email':
-        return 'email_invalid'.tr();
-      case 'invalid-credential':
-      case 'wrong-password':
-        return 'email_or_pw_invalid'.tr();
-      default:
-        return 'login_failed'.tr();
-    }
-  }
-
-  void _showErrorSnackbar(BuildContext context) {
+  void _showSnackbarError(BuildContext context, String error) {
     final messenger = ScaffoldMessenger.of(context);
     messenger.clearSnackBars();
-    messenger.showSnackBar(signinErrorSnackBar(context, _error!));
+    messenger.showSnackBar(signinErrorSnackBar(context, error.tr()));
   }
 
   Widget _buildEmailField() {
@@ -148,10 +104,7 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         onFieldSubmitted: (_) async {
-          await _submit();
-          if (_error != null && context.mounted) {
-            _showErrorSnackbar(context);
-          }
+          await context.read<AuthCubit>().signInWithEmail(_email, _password);
         },
         decoration: InputDecoration(
           labelText: "pw".tr(),
@@ -174,13 +127,7 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     return OutlinedButton(
       onPressed: _isEmailValid && _isPasswordValid
           ? () async {
-              setState(() {
-                _loading = true;
-              });
-              await _submit();
-              if (_error != null && context.mounted) {
-                _showErrorSnackbar(context);
-              }
+              await context.read<AuthCubit>().signInWithEmail(_email, _password);
             }
           : null,
       child: Text("sign_in".tr()),
@@ -210,39 +157,49 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: _loading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          AutofillGroup(
-                            child: Column(
-                              children: [
-                                _buildEmailField(),
-                                _buildPasswordField(context),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: Builder(
+                  builder: (context) {
+                    final authCubit = context.watch<AuthCubit>();
+                    final state = authCubit.state;
+                    final loading = state.maybeWhen(loading: () => true, orElse: () => false);
+
+                    state.maybeWhen(error: (error) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _showSnackbarError(context, error!);
+                      });
+                    }, orElse: (){});
+
+                    return loading ? const Center(child: CircularProgressIndicator()) : Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AutofillGroup(
+                          child: Column(
                             children: [
-                              _buildSignInButton(context),
-                              Center(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    "no_account".tr(),
-                                    style:
-                                        Theme.of(context).textTheme.labelSmall,
-                                  ),
-                                ),
-                              ),
-                              _buildSignUpButton(context),
+                              _buildEmailField(),
+                              _buildPasswordField(context),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildSignInButton(context),
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  "no_account".tr(),
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ),
+                            ),
+                            _buildSignUpButton(context),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                ),
               ),
             ),
           ),
