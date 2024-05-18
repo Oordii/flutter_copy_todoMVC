@@ -37,12 +37,6 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     super.dispose();
   }
 
-  void _showSnackbarError(BuildContext context, String error) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(signinErrorSnackBar(context, error.tr()));
-  }
-
   Widget _buildEmailField() {
     return TextFormField(
       key: _emailKey,
@@ -127,7 +121,9 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
     return OutlinedButton(
       onPressed: _isEmailValid && _isPasswordValid
           ? () async {
-              await context.read<AuthCubit>().signInWithEmail(_email, _password);
+              await context
+                  .read<AuthCubit>()
+                  .signInWithEmail(_email, _password);
             }
           : null,
       child: Text("sign_in".tr()),
@@ -161,43 +157,55 @@ class _SignInEmailScreenState extends State<SignInEmailScreen> {
                   builder: (context) {
                     final authCubit = context.watch<AuthCubit>();
                     final state = authCubit.state;
-                    final loading = state.maybeWhen(loading: () => true, orElse: () => false);
+                    final loading = state.maybeWhen(
+                        loading: () => true, orElse: () => false);
 
-                    state.maybeWhen(error: (error) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _showSnackbarError(context, error!);
-                      });
-                    }, orElse: (){});
+                    state.whenOrNull(
+                        error: (error) {
+                          if (error != null && context.mounted) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              final messenger = ScaffoldMessenger.of(context);
+                              messenger.clearSnackBars();
+                              messenger.showSnackBar(
+                                  signinErrorSnackBar(context, error.tr()));
+                            });
+                          }
+                        });
 
-                    return loading ? const Center(child: CircularProgressIndicator()) : Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AutofillGroup(
-                          child: Column(
+                    return loading
+                        ? const Center(child: CircularProgressIndicator())
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              _buildEmailField(),
-                              _buildPasswordField(context),
-                            ],
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildSignInButton(context),
-                            Center(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                child: Text(
-                                  "no_account".tr(),
-                                  style: Theme.of(context).textTheme.labelSmall,
+                              AutofillGroup(
+                                child: Column(
+                                  children: [
+                                    _buildEmailField(),
+                                    _buildPasswordField(context),
+                                  ],
                                 ),
                               ),
-                            ),
-                            _buildSignUpButton(context),
-                          ],
-                        ),
-                      ],
-                    );
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _buildSignInButton(context),
+                                  Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      child: Text(
+                                        "no_account".tr(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall,
+                                      ),
+                                    ),
+                                  ),
+                                  _buildSignUpButton(context),
+                                ],
+                              ),
+                            ],
+                          );
                   },
                 ),
               ),

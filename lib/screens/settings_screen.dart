@@ -20,12 +20,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  void _showSnackBarError(BuildContext context, String error) {
-    final messenger = ScaffoldMessenger.of(context);
-    messenger.clearSnackBars();
-    messenger.showSnackBar(signinErrorSnackBar(context, error.tr()));
-  }
-
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
@@ -36,21 +30,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: Align(
           alignment: Alignment.topCenter,
           child: Builder(builder: (context) {
-            final authCubit = context.watch<AuthCubit>();
-            final loading = authCubit.state.maybeWhen(
+            final state = context.watch<AuthCubit>().state;
+            
+            state.whenOrNull(
+                error: (message) {
+                  print('Snacking error');
+                  if (message != null && context.mounted) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      final messenger = ScaffoldMessenger.of(context);
+                      messenger.clearSnackBars();
+                      messenger.showSnackBar(
+                          signinErrorSnackBar(context, message.tr()));
+                    });
+                  }
+                });
+
+            final loading = state.maybeWhen(
               loading: () => true,
               orElse: () => false,
             );
-
-            context.watch<AuthCubit>().state.maybeWhen(
-                error: (message) {
-                  if (message != null && context.mounted) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _showSnackBarError(context, message);
-                    });
-                  }
-                },
-                orElse: () {});
 
             final googleLinked = FirebaseAuth.instance.currentUser?.providerData
                     .any((userInfo) => userInfo.providerId == "google.com") ??
@@ -77,7 +75,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -105,7 +104,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const SizedBox(height: 20),
                               Row(
                                 mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -157,7 +157,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   onPressed: loading || googleLinked
                                       ? null
                                       : () async {
-                                          context.read<AuthCubit>().linkGoogle();
+                                          context
+                                              .read<AuthCubit>()
+                                              .linkGoogle();
                                         }),
                               const SizedBox(height: 20),
                               buildSignInButton(
@@ -178,10 +180,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 onPressed: loading
                                     ? null
                                     : () async {
-                                        await context.read<AuthCubit>().signOut();
+                                        await context
+                                            .read<AuthCubit>()
+                                            .signOut();
                                         if (context.mounted) {
-                                          await context.router
-                                              .replaceAll([const SignInRoute()]);
+                                          await context.router.replaceAll(
+                                              [const SignInRoute()]);
                                         }
                                       },
                                 child: Text("signout".tr()),
