@@ -33,5 +33,10 @@
     "link_google": "Link a Google account",
     "link_facebook": "Link a Facebook account",
     "connected_google": "Google account is connected!",
-    "connected_facebook": "Facebook account is connected!"
+    "connected_facebook": "Facebook account is connected!",
+    "credential_in_use": "These credentials are already linked to different account",
+    "something_wrong": "Something went wrong, try again later",
+    "already_linked": "These credentials are already linked to your account",
+    "invalid_credential": "Invalid credential",
+    "login_failed": "Login failed"
 }

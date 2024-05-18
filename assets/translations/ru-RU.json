@@ -33,5 +33,10 @@
     "link_google": "Подключить аккаунт Google",
     "link_facebook": "Подключить аакаунт Facebook",
     "connected_google": "Аккаунт Google подключен!",
-    "connected_facebook": "Аккаунт Facebook подключен!"
+    "connected_facebook": "Аккаунт Facebook подключен!",
+    "credential_in_use": "Данные реквизиты для входа уже привязаны к другому аккаунту",
+    "something_wrong": "Что-то пошло не так, попробуйте позже",
+    "already_linked": "Данные реквизиты для входа уже привязаны к вашему аккаунту",
+    "invalid_credential": "Недействительные реквизиты для входа",
+    "login_failed": "Не удалось войти в аккаунт"
 }
