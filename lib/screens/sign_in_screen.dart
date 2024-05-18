@@ -28,8 +28,10 @@ class _SignInScreenState extends State<SignInScreen> {
     super.initState();
     FirebaseAuth.instance.authStateChanges().listen((user) async {
       if (user != null) {
-        unawaited(context.read<TodoListCubit>().init());
-        await getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
+        if (mounted) {
+          unawaited(context.read<TodoListCubit>().init());
+          await getIt.get<AppRouter>().replaceAll([const HomeRoute()]);
+        }
       }
     });
   }
@@ -38,20 +40,21 @@ class _SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const TodoAppBar(),
-      body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
-          state.whenOrNull(
-            error: (message) {
-              if (message != null && context.mounted) {
+      body: Builder(
+        builder: (context) {
+          final state = context.watch<AuthCubit>().state;
+
+          state.whenOrNull(error: (message) {
+            if (message != null && context.mounted) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
                 final messenger = ScaffoldMessenger.of(context);
                 messenger.clearSnackBars();
                 messenger
                     .showSnackBar(signinErrorSnackBar(context, message.tr()));
-              }
-            },
-          );
-        },
-        builder: (context, state) {
+              });
+            }
+          });
+
           final loading = state.maybeWhen(
             loading: () => true,
             orElse: () => false,
@@ -85,7 +88,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               "assets/images/auth/facebook.png"),
                           child: Text("sign_in_facebook".tr()),
                           onPressed: () async {
-                            await context.read<AuthCubit>().signInWithFacebook();
+                            await context
+                                .read<AuthCubit>()
+                                .signInWithFacebook();
                           },
                         ),
                       ],
