@@ -38,5 +38,6 @@
     "something_wrong": "Something went wrong, try again later",
     "already_linked": "These credentials are already linked to your account",
     "invalid_credential": "Invalid credential",
-    "login_failed": "Login failed"
+    "login_failed": "Login failed",
+    "weak_pw": "Password is too weak"
 }
