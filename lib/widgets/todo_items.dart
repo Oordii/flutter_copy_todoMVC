@@ -1,3 +1,4 @@
+import 'package:copy_todo_mvc/cubits/editing_cubit.dart';
 import 'package:copy_todo_mvc/widgets/todo_row.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/bar_index.dart';
@@ -27,6 +28,13 @@ class TodoItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<TodoListCubit>().state;
+    final newTaskId = context.select((TodoListCubit cubit) => cubit.state.maybeWhen(success: (tasks, barIndex, newTaskId) => newTaskId, orElse: ()=>null));
+
+    if(newTaskId != null){
+      context.read<TodoListCubit>().setNewTaskId(null);
+      context.read<EditingCubit>().setEditedTaskId(newTaskId);
+    }
+
     state.maybeWhen(
         initial: () {
           context.read<TodoListCubit>().init();
