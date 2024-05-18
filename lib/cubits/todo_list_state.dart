@@ -7,6 +7,6 @@ class TodoListState with _$TodoListState{
   const factory TodoListState.success({ 
     required List<Task> tasks, 
     @Default(BarIndex.all) BarIndex  barIndex, 
-    @Default(null) int? editedTaskId}) = _Success;
+    @Default(null) int? newTaskId}) = _Success;
   const factory TodoListState.error(String errorMessage) = _Error;
 }

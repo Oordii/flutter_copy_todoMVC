@@ -20,7 +20,7 @@ class TodoListCubit extends Cubit<TodoListState> {
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: BarIndex.all,
-          editedTaskId: null));
+          newTaskId: null));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
     }
@@ -33,16 +33,16 @@ class TodoListCubit extends Cubit<TodoListState> {
     if (currentState is _Success) {
       emit(currentState.copyWith(
           tasks: List.from(currentState.tasks)..add(newTask),
-          editedTaskId: null));
+          newTaskId: null));
     }
 
     try {
-      await _taskService.addTask(taskName);
+      final newTaskId = await _taskService.addTask(taskName);
       final tasks = await _taskService.getAll();
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: (currentState as _Success).barIndex,
-          editedTaskId: null));
+          newTaskId: newTaskId));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
       if (currentState is _Success) {
@@ -51,10 +51,10 @@ class TodoListCubit extends Cubit<TodoListState> {
     }
   }
 
-  void setEditedEntryKey(int key) {
+  void setNewTaskId(int? id) {
     final currentState = state;
     if (currentState is _Success) {
-      emit(currentState.copyWith(editedTaskId: key));
+      emit(currentState.copyWith(newTaskId: id));
     }
   }
 
@@ -75,7 +75,7 @@ class TodoListCubit extends Cubit<TodoListState> {
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: (currentState as _Success).barIndex,
-          editedTaskId: null));
+          newTaskId: null));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
       if (currentState is _Success) {
@@ -100,7 +100,7 @@ class TodoListCubit extends Cubit<TodoListState> {
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: (currentState as _Success).barIndex,
-          editedTaskId: null));
+          newTaskId: null));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
       if (currentState is _Success) {
@@ -123,7 +123,7 @@ class TodoListCubit extends Cubit<TodoListState> {
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: (currentState as _Success).barIndex,
-          editedTaskId: null));
+          newTaskId: null));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
       if (currentState is _Success) {
@@ -153,7 +153,7 @@ class TodoListCubit extends Cubit<TodoListState> {
       emit(TodoListState.success(
           tasks: tasks,
           barIndex: (currentState as _Success).barIndex,
-          editedTaskId: null));
+          newTaskId: null));
     } catch (error) {
       emit(TodoListState.error(error.toString()));
       if (currentState is _Success) {

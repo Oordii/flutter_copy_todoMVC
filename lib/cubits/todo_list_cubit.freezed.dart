@@ -21,7 +21,7 @@ mixin _$TodoListState {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            List<Task> tasks, BarIndex barIndex, int? editedTaskId)
+            List<Task> tasks, BarIndex barIndex, int? newTaskId)
         success,
     required TResult Function(String errorMessage) error,
   }) =>
@@ -30,7 +30,7 @@ mixin _$TodoListState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult? Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult? Function(String errorMessage)? error,
   }) =>
@@ -39,7 +39,7 @@ mixin _$TodoListState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult Function(String errorMessage)? error,
     required TResult orElse(),
@@ -131,7 +131,7 @@ class _$InitialImpl implements _Initial {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            List<Task> tasks, BarIndex barIndex, int? editedTaskId)
+            List<Task> tasks, BarIndex barIndex, int? newTaskId)
         success,
     required TResult Function(String errorMessage) error,
   }) {
@@ -143,7 +143,7 @@ class _$InitialImpl implements _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult? Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult? Function(String errorMessage)? error,
   }) {
@@ -155,7 +155,7 @@ class _$InitialImpl implements _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult Function(String errorMessage)? error,
     required TResult orElse(),
@@ -249,7 +249,7 @@ class _$LoadingImpl implements _Loading {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            List<Task> tasks, BarIndex barIndex, int? editedTaskId)
+            List<Task> tasks, BarIndex barIndex, int? newTaskId)
         success,
     required TResult Function(String errorMessage) error,
   }) {
@@ -261,7 +261,7 @@ class _$LoadingImpl implements _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult? Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult? Function(String errorMessage)? error,
   }) {
@@ -273,7 +273,7 @@ class _$LoadingImpl implements _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult Function(String errorMessage)? error,
     required TResult orElse(),
@@ -332,7 +332,7 @@ abstract class _$$SuccessImplCopyWith<$Res> {
           _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
       __$$SuccessImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<Task> tasks, BarIndex barIndex, int? editedTaskId});
+  $Res call({List<Task> tasks, BarIndex barIndex, int? newTaskId});
 }
 
 /// @nodoc
@@ -348,7 +348,7 @@ class __$$SuccessImplCopyWithImpl<$Res>
   $Res call({
     Object? tasks = null,
     Object? barIndex = null,
-    Object? editedTaskId = freezed,
+    Object? newTaskId = freezed,
   }) {
     return _then(_$SuccessImpl(
       tasks: null == tasks
@@ -359,9 +359,9 @@ class __$$SuccessImplCopyWithImpl<$Res>
           ? _value.barIndex
           : barIndex // ignore: cast_nullable_to_non_nullable
               as BarIndex,
-      editedTaskId: freezed == editedTaskId
-          ? _value.editedTaskId
-          : editedTaskId // ignore: cast_nullable_to_non_nullable
+      newTaskId: freezed == newTaskId
+          ? _value.newTaskId
+          : newTaskId // ignore: cast_nullable_to_non_nullable
               as int?,
     ));
   }
@@ -373,7 +373,7 @@ class _$SuccessImpl implements _Success {
   const _$SuccessImpl(
       {required final List<Task> tasks,
       this.barIndex = BarIndex.all,
-      this.editedTaskId = null})
+      this.newTaskId = null})
       : _tasks = tasks;
 
   final List<Task> _tasks;
@@ -389,11 +389,11 @@ class _$SuccessImpl implements _Success {
   final BarIndex barIndex;
   @override
   @JsonKey()
-  final int? editedTaskId;
+  final int? newTaskId;
 
   @override
   String toString() {
-    return 'TodoListState.success(tasks: $tasks, barIndex: $barIndex, editedTaskId: $editedTaskId)';
+    return 'TodoListState.success(tasks: $tasks, barIndex: $barIndex, newTaskId: $newTaskId)';
   }
 
   @override
@@ -404,13 +404,13 @@ class _$SuccessImpl implements _Success {
             const DeepCollectionEquality().equals(other._tasks, _tasks) &&
             (identical(other.barIndex, barIndex) ||
                 other.barIndex == barIndex) &&
-            (identical(other.editedTaskId, editedTaskId) ||
-                other.editedTaskId == editedTaskId));
+            (identical(other.newTaskId, newTaskId) ||
+                other.newTaskId == newTaskId));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType,
-      const DeepCollectionEquality().hash(_tasks), barIndex, editedTaskId);
+      const DeepCollectionEquality().hash(_tasks), barIndex, newTaskId);
 
   @JsonKey(ignore: true)
   @override
@@ -424,11 +424,11 @@ class _$SuccessImpl implements _Success {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            List<Task> tasks, BarIndex barIndex, int? editedTaskId)
+            List<Task> tasks, BarIndex barIndex, int? newTaskId)
         success,
     required TResult Function(String errorMessage) error,
   }) {
-    return success(tasks, barIndex, editedTaskId);
+    return success(tasks, barIndex, newTaskId);
   }
 
   @override
@@ -436,11 +436,11 @@ class _$SuccessImpl implements _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult? Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult? Function(String errorMessage)? error,
   }) {
-    return success?.call(tasks, barIndex, editedTaskId);
+    return success?.call(tasks, barIndex, newTaskId);
   }
 
   @override
@@ -448,13 +448,13 @@ class _$SuccessImpl implements _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult Function(String errorMessage)? error,
     required TResult orElse(),
   }) {
     if (success != null) {
-      return success(tasks, barIndex, editedTaskId);
+      return success(tasks, barIndex, newTaskId);
     }
     return orElse();
   }
@@ -501,11 +501,11 @@ abstract class _Success implements TodoListState {
   const factory _Success(
       {required final List<Task> tasks,
       final BarIndex barIndex,
-      final int? editedTaskId}) = _$SuccessImpl;
+      final int? newTaskId}) = _$SuccessImpl;
 
   List<Task> get tasks;
   BarIndex get barIndex;
-  int? get editedTaskId;
+  int? get newTaskId;
   @JsonKey(ignore: true)
   _$$SuccessImplCopyWith<_$SuccessImpl> get copyWith =>
       throw _privateConstructorUsedError;
@@ -579,7 +579,7 @@ class _$ErrorImpl implements _Error {
     required TResult Function() initial,
     required TResult Function() loading,
     required TResult Function(
-            List<Task> tasks, BarIndex barIndex, int? editedTaskId)
+            List<Task> tasks, BarIndex barIndex, int? newTaskId)
         success,
     required TResult Function(String errorMessage) error,
   }) {
@@ -591,7 +591,7 @@ class _$ErrorImpl implements _Error {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult? Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult? Function(String errorMessage)? error,
   }) {
@@ -603,7 +603,7 @@ class _$ErrorImpl implements _Error {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<Task> tasks, BarIndex barIndex, int? editedTaskId)?
+    TResult Function(List<Task> tasks, BarIndex barIndex, int? newTaskId)?
         success,
     TResult Function(String errorMessage)? error,
     required TResult orElse(),
