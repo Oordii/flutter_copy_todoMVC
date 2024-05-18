@@ -14,13 +14,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Layout(
       floatingActionButton: FloatingActionButton(
-        onPressed: (){
+        onPressed: () {
           FocusManager.instance.primaryFocus?.unfocus();
-          Future.delayed(Duration.zero, (){
-            context.read<TodoListCubit>().addTask('');
-          });
+          context.read<TodoListCubit>().addTask('');
         },
-        child: const Icon(Icons.add),),
+        child: const Icon(Icons.add),
+      ),
       child: (const SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -32,8 +31,7 @@ class HomeScreen extends StatelessWidget {
               margin: EdgeInsets.all(8),
               elevation: 3,
               child: Padding(
-                padding:
-                    EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
