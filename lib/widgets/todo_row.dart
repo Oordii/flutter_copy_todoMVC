@@ -1,3 +1,4 @@
+import 'package:copy_todo_mvc/cubits/editing_cubit.dart';
 import 'package:copy_todo_mvc/cubits/todo_list_cubit.dart';
 import 'package:copy_todo_mvc/models/app_color.dart';
 import 'package:copy_todo_mvc/models/task.dart';
@@ -23,14 +24,6 @@ class TodoRowState extends State<TodoRow> {
     super.initState();
     focusNode = FocusNode();
     _textEditingController = TextEditingController();
-
-    focusNode.addListener(() {
-      Future.delayed(Duration.zero, () {
-        if (!focusNode.hasPrimaryFocus) {
-          _submitText();
-        }
-      });
-    });
   }
 
   @override
@@ -40,23 +33,18 @@ class TodoRowState extends State<TodoRow> {
     super.dispose();
   }
 
-  void _submitText() {
-    final updatedTask = widget.task.copyWith(name: _textEditingController.text);
-    context.read<TodoListCubit>().updateTask(updatedTask);
-  }
-
   @override
   Widget build(BuildContext context) {
     _textEditingController.text = widget.task.name;
-    final state = context.watch<TodoListCubit>().state;
-    var isEditing = widget.task.id ==
-        state.maybeWhen(
-            success: (tasks, barIndex, editedTaskId) {
-              return editedTaskId;
-            },
-            orElse: () => null);
+    final state = context.watch<EditingCubit>().state;
+    bool isEditing = state.maybeWhen(
+        editing: (editedTaskId) {
+          return widget.task.id == editedTaskId;
+        },
+        orElse: () => false);
 
     if (isEditing) {
+      // FocusManager.instance.primaryFocus?.unfocus();
       Future.delayed(Duration.zero, () {
         focusNode.requestFocus();
       });
@@ -78,48 +66,64 @@ class TodoRowState extends State<TodoRow> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
           ),
           Expanded(
-            child: TextField(
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
-              focusNode: focusNode,
-              controller: _textEditingController,
-              onTapOutside: (PointerDownEvent event) {
-                FocusManager.instance.primaryFocus?.unfocus();
-              },
-              onSubmitted: (value) {
-                _submitText();
-              },
-              enabled: isEditing,
-              style: Theme.of(context).textTheme.bodySmall!.merge(TextStyle(
-                  color: widget.task.isCompleted
-                      ? Theme.of(context).dividerColor
-                      : null,
-                  decoration: widget.task.isCompleted
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none)),
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'todo_hint'.tr(),
-                  hintStyle: Theme.of(context).textTheme.labelSmall),
-            ),
+            child: !isEditing
+                ? Text(
+                    widget.task.name.isNotEmpty
+                        ? widget.task.name
+                        : 'todo_hint'.tr(),
+                    style: widget.task.name.isEmpty
+                        ? Theme.of(context).textTheme.labelSmall
+                        : Theme.of(context).textTheme.bodySmall!.merge(
+                            TextStyle(
+                                color: widget.task.isCompleted
+                                    ? Theme.of(context).dividerColor
+                                    : null,
+                                decoration: widget.task.isCompleted
+                                    ? TextDecoration.lineThrough
+                                    : TextDecoration.none)),
+                  )
+                : TextField(
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    focusNode: focusNode,
+                    controller: _textEditingController,
+                    onTapOutside: (PointerDownEvent event) async {
+                      context.read<EditingCubit>().setEditedTaskId(null);
+                      await context.read<TodoListCubit>().updateTask(widget.task
+                          .copyWith(name: _textEditingController.text));
+                    },
+                    enabled: isEditing,
+                    style: Theme.of(context).textTheme.bodySmall!.merge(
+                        TextStyle(
+                            color: widget.task.isCompleted
+                                ? Theme.of(context).dividerColor
+                                : null,
+                            decoration: widget.task.isCompleted
+                                ? TextDecoration.lineThrough
+                                : TextDecoration.none)),
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'todo_hint'.tr(),
+                        hintStyle: Theme.of(context).textTheme.labelSmall),
+                  ),
           ),
           Row(
             children: [
-              if (isEditing) ...{
-                const IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: null,
-                    icon: Icon(Icons.done)),
-              } else ...{
-                IconButton(
+              Visibility(
+                visible: !isEditing,
+                child: IconButton(
                     visualDensity: VisualDensity.compact,
                     onPressed: () {
-                      context
-                          .read<TodoListCubit>()
-                          .setEditedEntryKey(widget.task.id);
+                      if (context.mounted) {
+                        Future.delayed(const Duration(milliseconds: 40), () {
+                          context
+                              .read<EditingCubit>()
+                              .setEditedTaskId(widget.task.id);
+                        });
+                      }
                     },
                     icon: const Icon(Icons.edit)),
-              },
+              ),
               IconButton(
                 visualDensity: VisualDensity.compact,
                 onPressed: () {
