@@ -183,6 +183,11 @@ class AuthCubit extends Cubit<AuthState> {
       case "wrong-password":
         emit(const AuthState.error("email_or_pw_invalid"));
         break;
+      case "email-already-in-use":
+        emit(const AuthState.error("email_in_use"));
+        break;
+      case "weak-password":
+        emit(const AuthState.error("weak_pw"));
       default:
         emit(const AuthState.error("login_failed"));
     }
@@ -191,6 +196,17 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> signInWithEmail(String email, String password) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      _handleEmailAuthException(e);
+    }
+  }
+
+  Future<void> signUpWithEmail(String email, String password) async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
     } on FirebaseAuthException catch (e) {
       _handleEmailAuthException(e);
     }
